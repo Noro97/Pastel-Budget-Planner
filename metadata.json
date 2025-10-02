@@ -1,0 +1,5 @@
+{
+  "name": "Pastel Budget Planner",
+  "description": "A simple and elegant budget planner to track your income and expenses. Features category-based summaries, monthly charts, and persists all data locally in your browser.",
+  "requestFramePermissions": []
+}
