@@ -1,13 +1,13 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import type { Transaction } from '../types';
 import { TransactionType } from '../types';
+import { COMPONENTS, COLORS, TYPOGRAPHY } from '../design-system';
 
 interface MonthlyChartProps {
   transactions: Transaction[];
 }
 
-// A custom component for the tooltip cursor to avoid a rendering error.
 const CustomCursor = (props: any) => {
   const { x, y, width, height } = props;
   return <rect x={x} y={y} width={width} height={height} fill="rgba(238, 242, 255, 0.6)" />;
@@ -43,8 +43,8 @@ const MonthlyChart = ({ transactions }: MonthlyChartProps) => {
   }, [transactions]);
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-slate-700">Monthly Overview</h2>
+    <div className={COMPONENTS.card}>
+      <h2 className={`${TYPOGRAPHY.heading.lg} mb-4 ${COLORS.neutral.text.secondary}`}>Monthly Overview</h2>
       <div ref={chartWrapperRef} style={{ width: '100%', height: 320 }}>
         {transactions.length > 0 && chartWidth > 0 ? (
           <BarChart
@@ -74,7 +74,7 @@ const MonthlyChart = ({ transactions }: MonthlyChartProps) => {
             <Bar dataKey="expense" fill="#f7a8a8" name="Expense" radius={[8, 8, 0, 0]} />
           </BarChart>
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-500">
+          <div className={`flex items-center justify-center h-full ${COLORS.neutral.text.muted}`}>
             <p>No transactions this month to display in the chart.</p>
           </div>
         )}

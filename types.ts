@@ -1,4 +1,3 @@
-// Fix: Import ReactElement to use as the type for React components.
 import type { ReactElement } from 'react';
 
 export enum TransactionType {
@@ -15,12 +14,10 @@ export interface Transaction {
   date: string;
 }
 
-// Gamification Types
 export interface Badge {
   id: string;
   name: string;
   description: string;
-  // Fix: Use ReactElement instead of JSX.Element.
   Icon: (props: { unlocked: boolean }) => ReactElement;
 }
 

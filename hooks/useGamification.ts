@@ -1,13 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import type { Transaction, GamificationData } from '../types';
 import { TransactionType } from '../types';
 import { BADGE_DATA, checkBadgeConditions } from '../gamification/badgeData';
 
-// Utility to get the start of the week (Monday)
 const getStartOfWeek = (date: Date) => {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(d.setDate(diff));
 };
 
@@ -35,13 +34,26 @@ export const getInitialGamificationData = (): GamificationData => {
 export const useGamification = (
   transactions: Transaction[],
   gamificationData: GamificationData,
-  setGamificationData: React.Dispatch<React.SetStateAction<GamificationData>>,
+  setGamificationData: Dispatch<SetStateAction<GamificationData>>,
   stats: { balance: number }
 ) => {
   const prevDataRef = useRef<string>('');
+  const prevTransactionsRef = useRef<string>('');
+  const prevStatsRef = useRef<string>('');
 
   useEffect(() => {
     if (transactions.length === 0) return;
+
+    const transactionsString = JSON.stringify(transactions);
+    const statsString = JSON.stringify(stats);
+    
+    if (prevTransactionsRef.current === transactionsString && 
+        prevStatsRef.current === statsString) {
+      return;
+    }
+    
+    prevTransactionsRef.current = transactionsString;
+    prevStatsRef.current = statsString;
 
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
@@ -51,18 +63,15 @@ export const useGamification = (
 
     let updatedData = { ...gamificationData };
 
-    // 1. Check for new badge unlocks
     const newBadgeIds = checkBadgeConditions(transactions, stats);
     const allUnlockedIds = [...new Set([...updatedData.unlockedBadgeIds, ...newBadgeIds])];
     if (allUnlockedIds.length > updatedData.unlockedBadgeIds.length) {
       updatedData.unlockedBadgeIds = allUnlockedIds;
     }
 
-    // 2. Update Weekly Challenge
     const startOfWeek = getStartOfWeek(today);
     const startOfWeekStr = startOfWeek.toISOString().split('T')[0];
     
-    // Reset challenge if it's a new week
     if (updatedData.challenge.startDate !== startOfWeekStr) {
       updatedData.challenge = getInitialGamificationData().challenge;
     }
@@ -74,9 +83,7 @@ export const useGamification = (
     
     updatedData.challenge.progress = Math.max(0, weeklySavings);
     updatedData.challenge.isComplete = weeklySavings >= updatedData.challenge.target;
-    
 
-    // 3. Update Positive Day Streak
     if (lastTransactionDateStr !== updatedData.lastStreakUpdateDate) {
         const transactionsForLastDay = transactions.filter(t => t.date === lastTransactionDateStr);
         const dayIncome = transactionsForLastDay.filter(t => t.type === TransactionType.INCOME).reduce((sum, t) => sum + t.amount, 0);
@@ -88,14 +95,12 @@ export const useGamification = (
             const yesterdayStr = yesterday.toISOString().split('T')[0];
 
             if (updatedData.lastStreakUpdateDate === yesterdayStr) {
-                updatedData.positiveDayStreak += 1; // Continue streak
+                updatedData.positiveDayStreak += 1;
             } else {
-                updatedData.positiveDayStreak = 1; // New streak
+                updatedData.positiveDayStreak = 1;
             }
             updatedData.lastStreakUpdateDate = lastTransactionDateStr;
         } else {
-            // If the last day was negative, the streak is potentially broken
-            // But only reset if the negative day is today or yesterday relative to the last streak update
             const lastUpdate = updatedData.lastStreakUpdateDate ? new Date(updatedData.lastStreakUpdateDate) : new Date(0);
             const timeDiff = lastTransactionDate.getTime() - lastUpdate.getTime();
             const dayDiff = timeDiff / (1000 * 3600 * 24);
@@ -105,12 +110,11 @@ export const useGamification = (
         }
     }
 
-    // Only update if data has actually changed
     const updatedDataString = JSON.stringify(updatedData);
     if (prevDataRef.current !== updatedDataString) {
       prevDataRef.current = updatedDataString;
       setGamificationData(updatedData);
     }
 
-  }, [transactions, gamificationData, stats, setGamificationData]); // Dependency array
+  }, [transactions, stats]);
 };

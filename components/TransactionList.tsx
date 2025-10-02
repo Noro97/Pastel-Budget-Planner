@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Transaction } from '../types';
 import { TransactionType } from '../types';
+import { COMPONENTS, COLORS, TYPOGRAPHY } from '../design-system';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -20,23 +21,24 @@ const DeleteIcon = () => (
 
 const TransactionItem = ({ transaction, onDelete }: TransactionItemProps) => {
   const isIncome = transaction.type === TransactionType.INCOME;
-  const amountColor = isIncome ? 'text-green-600' : 'text-red-600';
+  const amountColor = isIncome ? COLORS.status.success.text : COLORS.status.error.text;
+  const borderColor = isIncome ? COLORS.status.success.border : COLORS.status.error.border;
   const sign = isIncome ? '+' : '-';
 
   return (
-    <li className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+    <li className={`flex items-center justify-between p-4 ${COLORS.neutral.bg.secondary} rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200`}>
       <div className="flex items-center space-x-4">
-        <div className={`w-1.5 h-10 rounded-full ${isIncome ? 'bg-green-300' : 'bg-red-300'}`}></div>
+        <div className={`w-1.5 h-10 rounded-full ${borderColor}`}></div>
         <div>
-          <p className="font-semibold text-slate-800">{transaction.description}</p>
-          <p className="text-sm text-slate-500">{transaction.category} &bull; {new Date(transaction.date).toLocaleDateString()}</p>
+          <p className={`font-semibold ${COLORS.neutral.text.primary}`}>{transaction.description}</p>
+          <p className={`text-sm ${COLORS.neutral.text.muted}`}>{transaction.category} &bull; {new Date(transaction.date).toLocaleDateString()}</p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
         <p className={`font-bold text-lg ${amountColor}`}>
           {sign}${transaction.amount.toFixed(2)}
         </p>
-        <button onClick={() => onDelete(transaction.id)} className="text-slate-400 hover:text-red-500 transition-colors">
+        <button onClick={() => onDelete(transaction.id)} className={`${COLORS.neutral.text.light} hover:text-red-500 transition-colors`}>
           <DeleteIcon />
         </button>
       </div>
@@ -47,10 +49,10 @@ const TransactionItem = ({ transaction, onDelete }: TransactionItemProps) => {
 
 const TransactionList = ({ transactions, onDelete }: TransactionListProps) => {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-slate-700">Recent Transactions</h2>
+    <div className={COMPONENTS.card}>
+      <h2 className={`${TYPOGRAPHY.heading.lg} mb-4 ${COLORS.neutral.text.secondary}`}>Recent Transactions</h2>
       {transactions.length === 0 ? (
-        <p className="text-slate-500 text-center py-8">No transactions yet. Add one to get started!</p>
+        <p className={`${COLORS.neutral.text.muted} text-center py-8`}>No transactions yet. Add one to get started!</p>
       ) : (
         <ul className="space-y-3">
           {transactions.map(transaction => (

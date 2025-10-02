@@ -1,13 +1,12 @@
 import React from 'react';
 import type { Badge, Transaction } from '../types';
 import { TransactionType } from '../types';
+import { COLORS } from '../design-system';
 
-// --- Badge Icon Components ---
-// Fix: Converted JSX to React.createElement to be valid in a .ts file.
 const FirstStepIcon = ({ unlocked }: { unlocked: boolean }) => (
   React.createElement('svg', {
     xmlns: "http://www.w3.org/2000/svg",
-    className: `h-8 w-8 ${unlocked ? 'text-emerald-500' : 'text-slate-300'}`,
+    className: `h-8 w-8 ${unlocked ? COLORS.badge.emerald : COLORS.neutral.text.light}`,
     fill: "none",
     viewBox: "0 0 24 24",
     stroke: "currentColor",
@@ -19,11 +18,10 @@ const FirstStepIcon = ({ unlocked }: { unlocked: boolean }) => (
   }))
 );
 
-// Fix: Converted JSX to React.createElement to be valid in a .ts file.
 const BudgetBossIcon = ({ unlocked }: { unlocked: boolean }) => (
   React.createElement('svg', {
     xmlns: "http://www.w3.org/2000/svg",
-    className: `h-8 w-8 ${unlocked ? 'text-sky-500' : 'text-slate-300'}`,
+    className: `h-8 w-8 ${unlocked ? COLORS.badge.sky : COLORS.neutral.text.light}`,
     fill: "none",
     viewBox: "0 0 24 24",
     stroke: "currentColor",
@@ -35,11 +33,10 @@ const BudgetBossIcon = ({ unlocked }: { unlocked: boolean }) => (
   }))
 );
 
-// Fix: Converted JSX to React.createElement to be valid in a .ts file.
 const SuperSaverIcon = ({ unlocked }: { unlocked: boolean }) => (
   React.createElement('svg', {
     xmlns: "http://www.w3.org/2000/svg",
-    className: `h-8 w-8 ${unlocked ? 'text-amber-500' : 'text-slate-300'}`,
+    className: `h-8 w-8 ${unlocked ? COLORS.badge.amber : COLORS.neutral.text.light}`,
     fill: "none",
     viewBox: "0 0 24 24",
     stroke: "currentColor",
@@ -51,11 +48,10 @@ const SuperSaverIcon = ({ unlocked }: { unlocked: boolean }) => (
   }))
 );
 
-// Fix: Converted JSX to React.createElement to be valid in a .ts file.
 const CategoryExplorerIcon = ({ unlocked }: { unlocked: boolean }) => (
   React.createElement('svg', {
     xmlns: "http://www.w3.org/2000/svg",
-    className: `h-8 w-8 ${unlocked ? 'text-violet-500' : 'text-slate-300'}`,
+    className: `h-8 w-8 ${unlocked ? COLORS.badge.violet : COLORS.neutral.text.light}`,
     fill: "none",
     viewBox: "0 0 24 24",
     stroke: "currentColor",
@@ -66,9 +62,6 @@ const CategoryExplorerIcon = ({ unlocked }: { unlocked: boolean }) => (
     d: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4H7zm0 0h8a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4z"
   }))
 );
-
-
-// --- Badge Definitions ---
 type UnlockCondition = (transactions: Transaction[], stats: { balance: number }) => boolean;
 
 interface BadgeWithCondition extends Badge {

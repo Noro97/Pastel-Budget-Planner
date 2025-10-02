@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Header from './components/Header';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
@@ -8,6 +8,7 @@ import GamificationDashboard from './components/GamificationDashboard';
 import { useGamification, getInitialGamificationData } from './hooks/useGamification';
 import type { Transaction, GamificationData } from './types';
 import { TransactionType } from './types';
+import { COLORS, SPACING } from './design-system';
 
 const App = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -48,16 +49,16 @@ const App = () => {
   useGamification(transactions, gamificationData, setGamificationData, { balance });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
+    <div className={`min-h-screen ${COLORS.neutral.bg.primary} ${COLORS.neutral.text.primary} font-sans`}>
       <Header />
-      <main className="container mx-auto p-4 md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+      <main className={`${SPACING.container} p-4 md:p-6 lg:p-8`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-3 ${SPACING.gap.lg}`}>
+          <div className={`lg:col-span-2 space-y-8`}>
             <Summary totalIncome={totalIncome} totalExpense={totalExpense} balance={balance} />
             <MonthlyChart transactions={currentMonthTransactions} />
             <TransactionList transactions={transactions} onDelete={deleteTransaction} />
           </div>
-          <div className="lg:col-span-1 space-y-8">
+          <div className={`lg:col-span-1 space-y-8`}>
             <TransactionForm onAddTransaction={addTransaction} />
             <GamificationDashboard gamificationData={gamificationData} />
           </div>
