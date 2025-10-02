@@ -1,18 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Header from './components/Header';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import Summary from './components/Summary';
 import MonthlyChart from './components/MonthlyChart';
 import GamificationDashboard from './components/GamificationDashboard';
-import { useLocalStorage } from './hooks/useLocalStorage';
 import { useGamification, getInitialGamificationData } from './hooks/useGamification';
 import type { Transaction, GamificationData } from './types';
 import { TransactionType } from './types';
 
 const App = () => {
-  const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
-  const [gamificationData, setGamificationData] = useLocalStorage<GamificationData>('gamificationData', getInitialGamificationData());
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [gamificationData, setGamificationData] = useState<GamificationData>(getInitialGamificationData());
 
   const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
     setTransactions(prev => [{ ...transaction, id: crypto.randomUUID() }, ...prev]);

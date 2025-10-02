@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { Transaction, GamificationData } from '../types';
 import { TransactionType } from '../types';
 import { BADGE_DATA, checkBadgeConditions } from '../gamification/badgeData';
@@ -38,6 +38,7 @@ export const useGamification = (
   setGamificationData: React.Dispatch<React.SetStateAction<GamificationData>>,
   stats: { balance: number }
 ) => {
+  const prevDataRef = useRef<string>('');
 
   useEffect(() => {
     if (transactions.length === 0) return;
@@ -104,7 +105,12 @@ export const useGamification = (
         }
     }
 
-    setGamificationData(updatedData);
+    // Only update if data has actually changed
+    const updatedDataString = JSON.stringify(updatedData);
+    if (prevDataRef.current !== updatedDataString) {
+      prevDataRef.current = updatedDataString;
+      setGamificationData(updatedData);
+    }
 
-  }, [transactions, setGamificationData]); // Dependency array
+  }, [transactions, gamificationData, stats, setGamificationData]); // Dependency array
 };
