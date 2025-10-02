@@ -9,7 +9,7 @@ export const COLORS = {
       500: 'text-sky-500',
     },
   },
-  
+
   status: {
     success: {
       bg: 'bg-green-100',
@@ -18,7 +18,7 @@ export const COLORS = {
       ring: 'ring-green-400',
     },
     error: {
-      bg: 'bg-red-100', 
+      bg: 'bg-red-100',
       text: 'text-red-600',
       border: 'bg-red-300',
       ring: 'ring-red-400',
@@ -28,7 +28,7 @@ export const COLORS = {
       text: 'text-amber-800',
     },
   },
-  
+
   neutral: {
     bg: {
       primary: 'bg-slate-50',
@@ -43,14 +43,14 @@ export const COLORS = {
     },
     border: 'border-slate-300',
   },
-  
+
   badge: {
     emerald: 'text-emerald-500',
     sky: 'text-sky-500',
     amber: 'text-amber-500',
     violet: 'text-violet-500',
   },
-  
+
   interactive: {
     focus: 'focus:ring-2 focus:ring-sky-300',
     hover: 'hover:bg-sky-500',

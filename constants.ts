@@ -1,10 +1,4 @@
-export const INCOME_CATEGORIES: string[] = [
-  'Salary',
-  'Freelance',
-  'Investment',
-  'Gifts',
-  'Other'
-];
+export const INCOME_CATEGORIES: string[] = ['Salary', 'Freelance', 'Investment', 'Gifts', 'Other'];
 
 export const EXPENSE_CATEGORIES: string[] = [
   'Food & Dining',
@@ -14,5 +8,5 @@ export const EXPENSE_CATEGORIES: string[] = [
   'Health & Wellness',
   'Shopping',
   'Utilities',
-  'Other'
+  'Other',
 ];

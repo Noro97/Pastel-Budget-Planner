@@ -1,8 +1,9 @@
 import { useState, useEffect, FormEvent } from 'react';
+
+import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '../constants';
+import { COMPONENTS, COLORS, TYPOGRAPHY } from '../design-system';
 import type { Transaction } from '../types';
 import { TransactionType } from '../types';
-import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '../constants';
-import { COMPONENTS, COLORS, TYPOGRAPHY, SPACING } from '../design-system';
 
 interface TransactionFormProps {
   onAddTransaction: (transaction: Omit<Transaction, 'id'>) => void;
@@ -47,47 +48,120 @@ const TransactionForm = ({ onAddTransaction }: TransactionFormProps) => {
     setAmount('');
     setDate(new Date().toISOString().split('T')[0]);
   };
-  
+
   const categories = type === TransactionType.INCOME ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   return (
     <div className={`${COMPONENTS.card} sticky top-8`}>
-      <h2 className={`${TYPOGRAPHY.heading.lg} mb-6 ${COLORS.neutral.text.secondary}`}>Add New Transaction</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <label className={`flex items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${type === TransactionType.INCOME ? `${COLORS.status.success.bg} ${COLORS.status.success.text} ring-2 ${COLORS.status.success.ring}` : `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted}`}`}>
-            <input type="radio" name="type" value={TransactionType.INCOME} checked={type === TransactionType.INCOME} onChange={() => setType(TransactionType.INCOME)} className="hidden" />
+      <h2 className={`${TYPOGRAPHY.heading.lg} mb-6 ${COLORS.neutral.text.secondary}`}>
+        Add New Transaction
+      </h2>
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        <div className='grid grid-cols-2 gap-4'>
+          <label
+            className={`flex items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${type === TransactionType.INCOME ? `${COLORS.status.success.bg} ${COLORS.status.success.text} ring-2 ${COLORS.status.success.ring}` : `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted}`}`}
+          >
+            <input
+              type='radio'
+              name='type'
+              value={TransactionType.INCOME}
+              checked={type === TransactionType.INCOME}
+              onChange={() => setType(TransactionType.INCOME)}
+              className='hidden'
+            />
             Income
           </label>
-          <label className={`flex items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${type === TransactionType.EXPENSE ? `${COLORS.status.error.bg} ${COLORS.status.error.text} ring-2 ${COLORS.status.error.ring}` : `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted}`}`}>
-            <input type="radio" name="type" value={TransactionType.EXPENSE} checked={type === TransactionType.EXPENSE} onChange={() => setType(TransactionType.EXPENSE)} className="hidden" />
+          <label
+            className={`flex items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${type === TransactionType.EXPENSE ? `${COLORS.status.error.bg} ${COLORS.status.error.text} ring-2 ${COLORS.status.error.ring}` : `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted}`}`}
+          >
+            <input
+              type='radio'
+              name='type'
+              value={TransactionType.EXPENSE}
+              checked={type === TransactionType.EXPENSE}
+              onChange={() => setType(TransactionType.EXPENSE)}
+              className='hidden'
+            />
             Expense
           </label>
         </div>
-        
+
         <div>
-          <label htmlFor="description" className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}>Description</label>
-          <input type="text" id="description" value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Coffee" className={COMPONENTS.input} required />
-        </div>
-        
-        <div>
-          <label htmlFor="amount" className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}>Amount</label>
-          <input type="number" id="amount" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className={COMPONENTS.input} required />
+          <label
+            htmlFor='description'
+            className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}
+          >
+            Description
+          </label>
+          <input
+            type='text'
+            id='description'
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder='e.g. Coffee'
+            className={COMPONENTS.input}
+            required
+          />
         </div>
 
         <div>
-          <label htmlFor="category" className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}>Category</label>
-          <select id="category" value={category} onChange={e => setCategory(e.target.value)} className={COMPONENTS.input} required>
-            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          <label
+            htmlFor='amount'
+            className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}
+          >
+            Amount
+          </label>
+          <input
+            type='number'
+            id='amount'
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+            placeholder='0.00'
+            className={COMPONENTS.input}
+            required
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor='category'
+            className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}
+          >
+            Category
+          </label>
+          <select
+            id='category'
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            className={COMPONENTS.input}
+            required
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="date" className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}>Date</label>
-          <input type="date" id="date" value={date} onChange={e => setDate(e.target.value)} className={COMPONENTS.input} required />
+          <label
+            htmlFor='date'
+            className={`block text-sm font-medium ${COLORS.neutral.text.muted} mb-1`}
+          >
+            Date
+          </label>
+          <input
+            type='date'
+            id='date'
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className={COMPONENTS.input}
+            required
+          />
         </div>
 
-        <button type="submit" className={`w-full ${COMPONENTS.button.primary}`}>
+        <button type='submit' className={`w-full ${COMPONENTS.button.primary}`}>
           Add Transaction
         </button>
       </form>

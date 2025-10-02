@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { COLORS, SPACING, TYPOGRAPHY } from '../design-system';
 
 const Header = () => {
