@@ -7,6 +7,12 @@ interface MonthlyChartProps {
   transactions: Transaction[];
 }
 
+// A custom component for the tooltip cursor to avoid a rendering error.
+const CustomCursor = (props: any) => {
+  const { x, y, width, height } = props;
+  return <rect x={x} y={y} width={width} height={height} fill="rgba(238, 242, 255, 0.6)" />;
+};
+
 const MonthlyChart = ({ transactions }: MonthlyChartProps) => {
   const chartWrapperRef = useRef<HTMLDivElement | null>(null);
   const [chartWidth, setChartWidth] = useState(0);
@@ -56,7 +62,7 @@ const MonthlyChart = ({ transactions }: MonthlyChartProps) => {
             <XAxis dataKey="name" tick={{ fill: '#64748b' }} />
             <YAxis tick={{ fill: '#64748b' }} tickFormatter={(value) => `$${value}`} />
             <Tooltip
-              cursor={{ fill: 'rgba(238, 242, 255, 0.6)' }}
+              cursor={<CustomCursor />}
               contentStyle={{
                 background: 'white',
                 border: '1px solid #e2e8f0',
