@@ -1,15 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Header from './components/Header';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import Summary from './components/Summary';
 import MonthlyChart from './components/MonthlyChart';
+import GamificationDashboard from './components/GamificationDashboard';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import type { Transaction } from './types';
+import { useGamification, getInitialGamificationData } from './hooks/useGamification';
+import type { Transaction, GamificationData } from './types';
 import { TransactionType } from './types';
 
 const App = () => {
   const [transactions, setTransactions] = useLocalStorage<Transaction[]>('transactions', []);
+  const [gamificationData, setGamificationData] = useLocalStorage<GamificationData>('gamificationData', getInitialGamificationData());
 
   const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
     setTransactions(prev => [{ ...transaction, id: crypto.randomUUID() }, ...prev]);
@@ -43,6 +46,8 @@ const App = () => {
     });
   }, [transactions]);
 
+  useGamification(transactions, gamificationData, setGamificationData, { balance });
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
       <Header />
@@ -53,8 +58,9 @@ const App = () => {
             <MonthlyChart transactions={currentMonthTransactions} />
             <TransactionList transactions={transactions} onDelete={deleteTransaction} />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-8">
             <TransactionForm onAddTransaction={addTransaction} />
+            <GamificationDashboard gamificationData={gamificationData} />
           </div>
         </div>
       </main>
