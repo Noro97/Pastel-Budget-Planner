@@ -93,62 +93,62 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
       </div>
 
       {/* Quick Stats */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-        <div className={`${COMPONENTS.card} text-center`}>
-          <div className='text-2xl mb-2'>💰</div>
-          <div className={`text-2xl font-bold ${COLORS.neutral.text.primary}`}>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4'>
+        <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
+          <div className='text-2xl md:text-3xl mb-2'>💰</div>
+          <div className={`text-xl md:text-2xl font-bold ${COLORS.neutral.text.primary}`}>
             {formatCurrency(stats.totalMonthlySubscriptionCost)}
           </div>
-          <div className={`text-sm ${COLORS.neutral.text.muted}`}>Monthly Cost</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Monthly Cost</div>
         </div>
 
-        <div className={`${COMPONENTS.card} text-center`}>
-          <div className='text-2xl mb-2'>📱</div>
-          <div className={`text-2xl font-bold ${COLORS.neutral.text.primary}`}>
+        <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
+          <div className='text-2xl md:text-3xl mb-2'>📱</div>
+          <div className={`text-xl md:text-2xl font-bold ${COLORS.neutral.text.primary}`}>
             {stats.activeSubscriptions}
           </div>
-          <div className={`text-sm ${COLORS.neutral.text.muted}`}>Active Subscriptions</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Active Subscriptions</div>
         </div>
 
-        <div className={`${COMPONENTS.card} text-center`}>
-          <div className='text-2xl mb-2'>⏰</div>
+        <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
+          <div className='text-2xl md:text-3xl mb-2'>⏰</div>
           <div
-            className={`text-2xl font-bold ${stats.upcomingThisWeek > 0 ? 'text-amber-600' : COLORS.neutral.text.primary}`}
+            className={`text-xl md:text-2xl font-bold ${stats.upcomingThisWeek > 0 ? 'text-amber-600' : COLORS.neutral.text.primary}`}
           >
             {stats.upcomingThisWeek}
           </div>
-          <div className={`text-sm ${COLORS.neutral.text.muted}`}>Due This Week</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Due This Week</div>
         </div>
 
-        <div className={`${COMPONENTS.card} text-center`}>
-          <div className='text-2xl mb-2'>{stats.overduePayments > 0 ? '🚨' : '✅'}</div>
+        <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
+          <div className='text-2xl md:text-3xl mb-2'>{stats.overduePayments > 0 ? '🚨' : '✅'}</div>
           <div
-            className={`text-2xl font-bold ${stats.overduePayments > 0 ? 'text-red-600' : COLORS.neutral.text.primary}`}
+            className={`text-xl md:text-2xl font-bold ${stats.overduePayments > 0 ? 'text-rose-600' : COLORS.neutral.text.primary}`}
           >
             {stats.overduePayments}
           </div>
-          <div className={`text-sm ${COLORS.neutral.text.muted}`}>Overdue</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Overdue</div>
         </div>
       </div>
 
       {/* Tab Navigation */}
       <div className={`${COMPONENTS.card}`}>
-        <div className='flex flex-wrap gap-2 mb-6'>
+        <div className='flex flex-wrap gap-2 mb-4 md:mb-6'>
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as 'overview' | 'calendar' | 'list' | 'add')}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
+                flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base
                 ${
                   activeTab === tab.id
-                    ? 'bg-sky-100 text-sky-700 shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
                 }
               `}
             >
               <span>{tab.icon}</span>
-              {tab.label}
+              <span className='hidden sm:inline'>{tab.label}</span>
             </button>
           ))}
         </div>
@@ -206,11 +206,11 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                         </div>
                         <button
                           onClick={() => processSubscriptionPayment(subscription.id)}
-                          className={`px-3 py-1 text-sm rounded-lg ${
+                          className={`px-3 py-1.5 text-xs md:text-sm rounded-lg font-medium ${
                             subscription.daysUntilPayment <= 0
-                              ? 'bg-red-600 text-white hover:bg-red-700'
-                              : 'bg-sky-600 text-white hover:bg-sky-700'
-                          } transition-colors`}
+                              ? 'bg-rose-600 text-white hover:bg-rose-700'
+                              : 'bg-blue-600 text-white hover:bg-blue-700'
+                          } transition-all shadow-sm`}
                         >
                           Pay Now
                         </button>
@@ -254,9 +254,9 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                         <div key={category} className='flex items-center justify-between py-2'>
                           <span className='text-slate-700'>{category}</span>
                           <div className='flex items-center gap-2'>
-                            <div className='w-24 bg-slate-200 rounded-full h-2'>
+                            <div className='w-20 md:w-24 bg-gray-200 rounded-full h-2'>
                               <div
-                                className='bg-sky-400 h-2 rounded-full'
+                                className='bg-blue-500 h-2 rounded-full transition-all'
                                 style={{
                                   width: `${((amount as number) / Math.max(...(Object.values(categoryTotals) as number[]))) * 100}%`,
                                 }}

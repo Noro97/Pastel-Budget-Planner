@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pastel Budget Planner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="description" content="Manage your budget and subscriptions with ease" />
+    <title>Budget Planner - Manage Finances & Subscriptions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <script>
@@ -12,7 +13,7 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
             },
           },
         },
@@ -29,7 +30,7 @@
       }
     </script>
   </head>
-  <body class="bg-slate-50 font-sans">
+  <body class="bg-gray-50 font-sans antialiased">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

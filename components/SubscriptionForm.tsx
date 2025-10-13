@@ -124,7 +124,7 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
   };
 
   return (
-    <div className={`${COMPONENTS.card} space-y-6`}>
+    <div className={`${COMPONENTS.card} space-y-4 md:space-y-6`}>
       <div className='flex items-center justify-between'>
         <h3 className={`${TYPOGRAPHY.heading.lg} ${COLORS.neutral.text.primary}`}>
           Add New Subscription
@@ -132,14 +132,15 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
         {onClose && (
           <button
             onClick={onClose}
-            className={`${COLORS.neutral.text.light} hover:${COLORS.neutral.text.secondary} transition-colors`}
+            className={`${COLORS.neutral.text.light} hover:${COLORS.neutral.text.secondary} transition-colors text-xl`}
+            aria-label='Close'
           >
             ✕
           </button>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-3 md:space-y-4'>
         {/* Name */}
         <div>
           <label
@@ -151,10 +152,10 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
             type='text'
             value={formData.name}
             onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            className={`${COMPONENTS.input} ${errors.name ? 'border-red-300 ring-red-400' : ''}`}
+            className={`${COMPONENTS.input} ${errors.name ? 'border-rose-400 ring-rose-400' : ''}`}
             placeholder='Netflix, Spotify, etc.'
           />
-          {errors.name && <p className='text-red-500 text-sm mt-1'>{errors.name}</p>}
+          {errors.name && <p className='text-rose-600 text-sm mt-1'>{errors.name}</p>}
         </div>
 
         {/* Description */}
@@ -186,10 +187,10 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
               step='0.01'
               value={formData.amount}
               onChange={e => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-              className={`${COMPONENTS.input} ${errors.amount ? 'border-red-300 ring-red-400' : ''}`}
+              className={`${COMPONENTS.input} ${errors.amount ? 'border-rose-400 ring-rose-400' : ''}`}
               placeholder='9.99'
             />
-            {errors.amount && <p className='text-red-500 text-sm mt-1'>{errors.amount}</p>}
+            {errors.amount && <p className='text-rose-600 text-sm mt-1'>{errors.amount}</p>}
           </div>
 
           <div>
@@ -249,10 +250,11 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
                   key={color}
                   type='button'
                   onClick={() => setFormData(prev => ({ ...prev, color }))}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    formData.color === color ? 'border-slate-400 scale-110' : 'border-slate-200'
+                  className={`w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-all ${
+                    formData.color === color ? 'border-blue-500 scale-110 ring-2 ring-blue-200' : 'border-gray-300'
                   }`}
                   style={{ backgroundColor: color }}
+                  aria-label={`Select ${color} color`}
                 />
               ))}
             </div>
@@ -270,9 +272,9 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
             type='date'
             value={formData.startDate}
             onChange={e => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-            className={`${COMPONENTS.input} ${errors.startDate ? 'border-red-300 ring-red-400' : ''}`}
+            className={`${COMPONENTS.input} ${errors.startDate ? 'border-rose-400 ring-rose-400' : ''}`}
           />
-          {errors.startDate && <p className='text-red-500 text-sm mt-1'>{errors.startDate}</p>}
+          {errors.startDate && <p className='text-rose-600 text-sm mt-1'>{errors.startDate}</p>}
         </div>
 
         {/* Reminder Settings */}
@@ -292,10 +294,10 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
                 key={value}
                 type='button'
                 onClick={() => toggleReminderDay(value)}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all ${
                   formData.reminderDays.includes(value)
-                    ? 'bg-sky-100 text-sky-700 border border-sky-300'
-                    : 'bg-slate-100 text-slate-600 border border-slate-300 hover:bg-slate-200'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-400'
+                    : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'
                 }`}
               >
                 {label}
@@ -311,7 +313,7 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
             id='autoRenew'
             checked={formData.autoRenew}
             onChange={e => setFormData(prev => ({ ...prev, autoRenew: e.target.checked }))}
-            className='rounded border-slate-300 text-sky-600 focus:ring-sky-300'
+            className='rounded border-gray-300 text-blue-600 focus:ring-blue-400 w-4 h-4'
           />
           <label
             htmlFor='autoRenew'

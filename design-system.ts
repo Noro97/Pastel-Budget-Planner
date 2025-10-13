@@ -1,59 +1,75 @@
 export const COLORS = {
   primary: {
-    teal: {
-      200: 'bg-teal-200',
-      800: 'text-teal-800',
+    blue: {
+      50: 'bg-blue-50',
+      100: 'bg-blue-100',
+      500: 'bg-blue-500',
+      600: 'bg-blue-600',
+      700: 'bg-blue-700',
+      text: {
+        600: 'text-blue-600',
+        700: 'text-blue-700',
+        800: 'text-blue-800',
+      },
     },
-    sky: {
-      400: 'bg-sky-400',
-      500: 'text-sky-500',
+    emerald: {
+      50: 'bg-emerald-50',
+      500: 'bg-emerald-500',
+      600: 'bg-emerald-600',
+      text: {
+        600: 'text-emerald-600',
+        700: 'text-emerald-700',
+      },
     },
   },
 
   status: {
     success: {
-      bg: 'bg-green-100',
-      text: 'text-green-600',
-      border: 'bg-green-300',
-      ring: 'ring-green-400',
+      bg: 'bg-emerald-50',
+      text: 'text-emerald-600',
+      border: 'border-emerald-300',
+      ring: 'ring-emerald-400',
     },
     error: {
-      bg: 'bg-red-100',
-      text: 'text-red-600',
-      border: 'bg-red-300',
-      ring: 'ring-red-400',
+      bg: 'bg-rose-50',
+      text: 'text-rose-600',
+      border: 'border-rose-300',
+      ring: 'ring-rose-400',
     },
     warning: {
-      bg: 'bg-amber-100',
-      text: 'text-amber-800',
+      bg: 'bg-amber-50',
+      text: 'text-amber-700',
+      border: 'border-amber-300',
     },
   },
 
   neutral: {
     bg: {
-      primary: 'bg-slate-50',
+      primary: 'bg-gray-50',
       secondary: 'bg-white',
-      muted: 'bg-slate-100',
+      muted: 'bg-gray-100',
+      dark: 'bg-gray-800',
     },
     text: {
-      primary: 'text-slate-800',
-      secondary: 'text-slate-700',
-      muted: 'text-slate-500',
-      light: 'text-slate-400',
+      primary: 'text-gray-900',
+      secondary: 'text-gray-700',
+      muted: 'text-gray-500',
+      light: 'text-gray-400',
     },
-    border: 'border-slate-300',
+    border: 'border-gray-200',
   },
 
   badge: {
     emerald: 'text-emerald-500',
-    sky: 'text-sky-500',
+    blue: 'text-blue-500',
     amber: 'text-amber-500',
-    violet: 'text-violet-500',
+    rose: 'text-rose-500',
   },
 
   interactive: {
-    focus: 'focus:ring-2 focus:ring-sky-300',
-    hover: 'hover:bg-sky-500',
+    focus: 'focus:ring-2 focus:ring-blue-400 focus:outline-none',
+    hover: 'hover:bg-blue-600',
+    transition: 'transition-all duration-200',
   },
 } as const;
 
@@ -90,10 +106,12 @@ export const TYPOGRAPHY = {
 } as const;
 
 export const COMPONENTS = {
-  card: `${COLORS.neutral.bg.secondary} ${SPACING.padding.md} rounded-2xl shadow-lg`,
+  card: `bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 ${COLORS.interactive.transition}`,
   button: {
-    primary: `${COLORS.primary.sky[400]} text-white font-bold py-3 px-4 rounded-lg ${COLORS.interactive.hover} transition-colors duration-300 shadow-md`,
-    secondary: `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted} font-medium py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors`,
+    primary: `bg-blue-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-blue-700 active:bg-blue-800 ${COLORS.interactive.transition} shadow-sm hover:shadow-md`,
+    secondary: `bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 ${COLORS.interactive.transition}`,
+    success: `bg-emerald-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-emerald-700 active:bg-emerald-800 ${COLORS.interactive.transition} shadow-sm`,
+    danger: `bg-rose-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-rose-700 active:bg-rose-800 ${COLORS.interactive.transition} shadow-sm`,
   },
-  input: `w-full px-3 py-2 ${COLORS.neutral.border} rounded-lg focus:outline-none ${COLORS.interactive.focus}`,
+  input: `w-full px-4 py-2.5 border border-gray-300 rounded-lg ${COLORS.interactive.focus} ${COLORS.interactive.transition} placeholder:text-gray-400`,
 } as const;

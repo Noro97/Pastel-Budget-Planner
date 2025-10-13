@@ -64,17 +64,17 @@ const App = () => {
       <Header />
 
       {/* Tab Navigation */}
-      <div className={`${SPACING.container} px-4 md:px-6 lg:px-8 pt-6`}>
-        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-4'>
-          <div className='flex gap-4'>
+      <div className={`${SPACING.container} px-4 md:px-6 lg:px-8 pt-4 md:pt-6`}>
+        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4'>
+          <div className='flex gap-2 md:gap-3 flex-wrap'>
             <button
               onClick={() => setActiveTab('budget')}
               className={`
-                px-4 py-2 rounded-lg font-semibold transition-colors
+                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base
                 ${
                   activeTab === 'budget'
-                    ? 'bg-sky-100 text-sky-700'
-                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                 }
               `}
             >
@@ -83,11 +83,11 @@ const App = () => {
             <button
               onClick={() => setActiveTab('subscriptions')}
               className={`
-                px-4 py-2 rounded-lg font-semibold transition-colors
+                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base
                 ${
                   activeTab === 'subscriptions'
-                    ? 'bg-sky-100 text-sky-700'
-                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                 }
               `}
             >
@@ -99,7 +99,7 @@ const App = () => {
           {activeTab === 'subscriptions' && subscriptions.length === 0 && (
             <button
               onClick={() => initializeSampleData(setSubscriptions)}
-              className='px-4 py-2 bg-gradient-to-r from-pink-200 to-purple-200 text-purple-800 rounded-lg font-medium hover:from-pink-300 hover:to-purple-300 transition-all shadow-sm'
+              className='px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-blue-600 transition-all shadow-sm text-sm md:text-base'
             >
               ✨ Load Demo Data
             </button>
@@ -109,13 +109,13 @@ const App = () => {
 
       <main className={`${SPACING.container} p-4 md:p-6 lg:p-8`}>
         {activeTab === 'budget' ? (
-          <div className={`grid grid-cols-1 lg:grid-cols-3 ${SPACING.gap.lg}`}>
-            <div className={`lg:col-span-2 space-y-8`}>
+          <div className={`grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-8`}>
+            <div className={`xl:col-span-2 space-y-4 md:space-y-6 lg:space-y-8`}>
               <Summary totalIncome={totalIncome} totalExpense={totalExpense} balance={balance} />
               <MonthlyChart transactions={currentMonthTransactions} />
               <TransactionList transactions={transactions} onDelete={deleteTransaction} />
             </div>
-            <div className={`lg:col-span-1 space-y-8`}>
+            <div className={`xl:col-span-1 space-y-4 md:space-y-6 lg:space-y-8`}>
               <TransactionForm onAddTransaction={addTransaction} />
               <GamificationDashboard gamificationData={gamificationData} />
             </div>

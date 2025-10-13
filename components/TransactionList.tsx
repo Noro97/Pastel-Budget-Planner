@@ -39,26 +39,27 @@ const TransactionItem = ({ transaction, onDelete }: TransactionItemProps) => {
 
   return (
     <li
-      className={`flex items-center justify-between p-4 ${COLORS.neutral.bg.secondary} rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200`}
+      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 md:p-4 ${COLORS.neutral.bg.secondary} rounded-xl border ${COLORS.neutral.border} hover:shadow-md transition-all`}
     >
-      <div className='flex items-center space-x-4'>
-        <div className={`w-1.5 h-10 rounded-full ${borderColor}`}></div>
-        <div>
-          <p className={`font-semibold ${COLORS.neutral.text.primary}`}>
+      <div className='flex items-center space-x-3 sm:space-x-4 flex-1'>
+        <div className={`w-1 sm:w-1.5 h-12 sm:h-10 rounded-full ${borderColor}`}></div>
+        <div className='flex-1 min-w-0'>
+          <p className={`font-semibold ${COLORS.neutral.text.primary} text-sm md:text-base truncate`}>
             {transaction.description}
           </p>
-          <p className={`text-sm ${COLORS.neutral.text.muted}`}>
+          <p className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-0.5`}>
             {transaction.category} &bull; {new Date(transaction.date).toLocaleDateString()}
           </p>
         </div>
       </div>
-      <div className='flex items-center space-x-4'>
-        <p className={`font-bold text-lg ${amountColor}`}>
+      <div className='flex items-center justify-between sm:justify-end space-x-3 sm:space-x-4 w-full sm:w-auto'>
+        <p className={`font-bold text-base md:text-lg ${amountColor}`}>
           {sign}${transaction.amount.toFixed(2)}
         </p>
         <button
           onClick={() => onDelete(transaction.id)}
-          className={`${COLORS.neutral.text.light} hover:text-red-500 transition-colors`}
+          className={`${COLORS.neutral.text.light} hover:text-rose-600 transition-colors p-1`}
+          aria-label='Delete transaction'
         >
           <DeleteIcon />
         </button>

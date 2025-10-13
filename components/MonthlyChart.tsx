@@ -46,36 +46,37 @@ const MonthlyChart = ({ transactions }: MonthlyChartProps) => {
 
   return (
     <div className={COMPONENTS.card}>
-      <h2 className={`${TYPOGRAPHY.heading.lg} mb-4 ${COLORS.neutral.text.secondary}`}>
+      <h2 className={`${TYPOGRAPHY.heading.lg} mb-3 md:mb-4 ${COLORS.neutral.text.secondary}`}>
         Monthly Overview
       </h2>
-      <div ref={chartWrapperRef} style={{ width: '100%', height: 320 }}>
+      <div ref={chartWrapperRef} className='w-full h-64 md:h-80'>
         {transactions.length > 0 && chartWidth > 0 ? (
           <BarChart
             width={chartWidth}
-            height={320}
+            height={chartWrapperRef.current?.offsetHeight || 320}
             data={chartData}
             margin={{
               top: 5,
-              right: 20,
-              left: -10,
+              right: 10,
+              left: -15,
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray='3 3' stroke='#e0e0e0' />
-            <XAxis dataKey='name' tick={{ fill: '#64748b' }} />
-            <YAxis tick={{ fill: '#64748b' }} tickFormatter={value => `$${value}`} />
+            <CartesianGrid strokeDasharray='3 3' stroke='#e5e7eb' />
+            <XAxis dataKey='name' tick={{ fill: '#6b7280', fontSize: 12 }} />
+            <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} tickFormatter={value => `$${value}`} />
             <Tooltip
               cursor={<CustomCursor />}
               contentStyle={{
                 background: 'white',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5e7eb',
                 borderRadius: '0.75rem',
+                fontSize: '14px',
               }}
             />
-            <Legend wrapperStyle={{ paddingTop: '20px' }} />
-            <Bar dataKey='income' fill='#6ee7b7' name='Income' radius={[8, 8, 0, 0]} />
-            <Bar dataKey='expense' fill='#f7a8a8' name='Expense' radius={[8, 8, 0, 0]} />
+            <Legend wrapperStyle={{ paddingTop: '16px', fontSize: '14px' }} />
+            <Bar dataKey='income' fill='#10b981' name='Income' radius={[8, 8, 0, 0]} />
+            <Bar dataKey='expense' fill='#f43f5e' name='Expense' radius={[8, 8, 0, 0]} />
           </BarChart>
         ) : (
           <div className={`flex items-center justify-center h-full ${COLORS.neutral.text.muted}`}>

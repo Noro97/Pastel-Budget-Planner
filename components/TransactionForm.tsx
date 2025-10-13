@@ -52,11 +52,11 @@ const TransactionForm = ({ onAddTransaction }: TransactionFormProps) => {
   const categories = type === TransactionType.INCOME ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   return (
-    <div className={`${COMPONENTS.card} sticky top-8`}>
-      <h2 className={`${TYPOGRAPHY.heading.lg} mb-6 ${COLORS.neutral.text.secondary}`}>
+    <div className={`${COMPONENTS.card} lg:sticky lg:top-8`}>
+      <h2 className={`${TYPOGRAPHY.heading.lg} mb-4 md:mb-6 ${COLORS.neutral.text.secondary}`}>
         Add New Transaction
       </h2>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-3 md:space-y-4'>
         <div className='grid grid-cols-2 gap-4'>
           <label
             className={`flex items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${type === TransactionType.INCOME ? `${COLORS.status.success.bg} ${COLORS.status.success.text} ring-2 ${COLORS.status.success.ring}` : `${COLORS.neutral.bg.muted} ${COLORS.neutral.text.muted}`}`}
