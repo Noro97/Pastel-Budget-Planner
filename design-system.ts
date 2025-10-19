@@ -106,12 +106,12 @@ export const TYPOGRAPHY = {
 } as const;
 
 export const COMPONENTS = {
-  card: `bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 ${COLORS.interactive.transition}`,
+  card: `bg-white border border-gray-100 p-4 md:p-6 rounded-xl liquid-glass`,
   button: {
-    primary: `bg-blue-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-blue-700 active:bg-blue-800 ${COLORS.interactive.transition} shadow-sm hover:shadow-md`,
-    secondary: `bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 ${COLORS.interactive.transition}`,
-    success: `bg-emerald-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-emerald-700 active:bg-emerald-800 ${COLORS.interactive.transition} shadow-sm`,
-    danger: `bg-rose-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:bg-rose-700 active:bg-rose-800 ${COLORS.interactive.transition} shadow-sm`,
+    primary: `text-white font-semibold py-2.5 px-5 rounded-lg ${COLORS.interactive.transition} shadow-sm hover:shadow-md liquid-glass`,
+    secondary: `text-white font-medium py-2 px-4 rounded-lg ${COLORS.interactive.transition} liquid-glass`,
+    success: `text-white font-semibold py-2.5 px-5 rounded-lg ${COLORS.interactive.transition} shadow-sm liquid-glass`,
+    danger: `text-white font-semibold py-2.5 px-5 rounded-lg ${COLORS.interactive.transition} shadow-sm liquid-glass`,
   },
-  input: `w-full px-4 py-2.5 border border-gray-300 rounded-lg ${COLORS.interactive.focus} ${COLORS.interactive.transition} placeholder:text-gray-400`,
+  input: `w-full px-4 py-2.5 border-gray-300 rounded-lg ${COLORS.interactive.focus} ${COLORS.interactive.transition} placeholder:text-gray-400 liquid-glass`,
 } as const;
