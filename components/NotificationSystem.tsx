@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useCallback } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { BillReminder, Subscription } from '../types';
@@ -43,9 +43,12 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
     });
   };
 
-  const getSubscriptionDetails = (subscriptionId: string) => {
-    return subscriptions.find(sub => sub.id === subscriptionId);
-  };
+  const getSubscriptionDetails = useCallback(
+    (subscriptionId: string) => {
+      return subscriptions.find(sub => sub.id === subscriptionId);
+    },
+    [subscriptions]
+  );
 
   const getReminderIcon = (type: string) => {
     switch (type) {
@@ -73,7 +76,7 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
     }
   };
 
-  const addToast = (toast: Omit<ToastNotification, 'id'>) => {
+  const addToast = useCallback((toast: Omit<ToastNotification, 'id'>) => {
     const id = crypto.randomUUID();
     const newToast = { ...toast, id };
     setToasts(prev => [...prev, newToast]);
@@ -82,7 +85,7 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
     setTimeout(() => {
       removeToast(id);
     }, toast.duration || 5000);
-  };
+  }, []);
 
   const removeToast = (id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -144,7 +147,7 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
         }
       }
     });
-  }, [reminders]);
+  }, [reminders, addToast, getSubscriptionDetails, onMarkAsRead, toasts]);
 
   const getToastIcon = (type: ToastNotification['type']) => {
     switch (type) {

@@ -1,4 +1,4 @@
-import { useState, useMemo, FC } from 'react';
+import { useState, useMemo, FC, useCallback } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { Subscription } from '../types';
@@ -38,10 +38,13 @@ const SubscriptionCalendar: FC<SubscriptionCalendarProps> = ({
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const getSubscriptionsForDate = (date: Date): Subscription[] => {
-    const dateString = date.toISOString().split('T')[0];
-    return subscriptions.filter(sub => sub.nextPaymentDate === dateString);
-  };
+  const getSubscriptionsForDate = useCallback(
+    (date: Date): Subscription[] => {
+      const dateString = date.toISOString().split('T')[0];
+      return subscriptions.filter(sub => sub.nextPaymentDate === dateString);
+    },
+    [subscriptions]
+  );
 
   const calendarDays = useMemo(() => {
     const year = currentDate.getFullYear();
@@ -96,7 +99,7 @@ const SubscriptionCalendar: FC<SubscriptionCalendarProps> = ({
     }
 
     return days;
-  }, [currentDate, subscriptions]);
+  }, [currentDate, getSubscriptionsForDate]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {

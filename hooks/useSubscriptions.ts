@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react';
 
 import {
   Subscription,
@@ -140,7 +140,7 @@ export const useSubscriptions = (
   };
 
   // Generate reminders for upcoming subscriptions
-  const generateReminders = () => {
+  const generateReminders = useCallback(() => {
     const today = new Date();
     const newReminders: BillReminder[] = [];
 
@@ -179,7 +179,7 @@ export const useSubscriptions = (
     if (newReminders.length > 0) {
       setReminders(prev => [...prev, ...newReminders]);
     }
-  };
+  }, [reminders, subscriptions]);
 
   // Mark reminder as read
   const markReminderAsRead = (reminderId: string) => {
@@ -244,7 +244,7 @@ export const useSubscriptions = (
     generateReminders();
     const interval = setInterval(generateReminders, 1000 * 60 * 60); // Check every hour
     return () => clearInterval(interval);
-  }, [subscriptions, notificationSettings.reminderFrequency]);
+  }, [subscriptions, notificationSettings.reminderFrequency, generateReminders]);
 
   return {
     subscriptions,
