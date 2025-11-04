@@ -128,5 +128,5 @@ export const useGamification = (
       prevDataRef.current = updatedDataString;
       setGamificationData(updatedData);
     }
-  }, [transactions, stats]);
+  }, [transactions, stats, gamificationData, setGamificationData]);
 };

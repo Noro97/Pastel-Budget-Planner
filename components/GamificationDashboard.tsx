@@ -41,7 +41,9 @@ const GamificationDashboard = ({ gamificationData }: GamificationDashboardProps)
 
       <div className='space-y-2'>
         <div className='flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-1'>
-          <h3 className={`font-semibold ${COLORS.neutral.text.muted} text-sm md:text-base`}>{challenge.name}</h3>
+          <h3 className={`font-semibold ${COLORS.neutral.text.muted} text-sm md:text-base`}>
+            {challenge.name}
+          </h3>
           <p className='text-xs md:text-sm font-medium text-blue-600'>
             ${challenge.progress.toFixed(2)} / ${challenge.target.toFixed(2)}
           </p>
@@ -82,7 +84,9 @@ const GamificationDashboard = ({ gamificationData }: GamificationDashboardProps)
       </div>
 
       <div className='space-y-3'>
-        <h3 className={`font-semibold ${COLORS.neutral.text.muted} text-sm md:text-base`}>Badges</h3>
+        <h3 className={`font-semibold ${COLORS.neutral.text.muted} text-sm md:text-base`}>
+          Badges
+        </h3>
         <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4'>
           {BADGE_DATA.map(badge => (
             <BadgeItem
