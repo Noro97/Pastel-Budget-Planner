@@ -79,26 +79,38 @@ export const useGamification = (
       updatedData.challenge = getInitialGamificationData().challenge;
     }
 
-    const weeklyTransactions = transactions.filter(t => t.date >= startOfWeekStr);
-    const weeklyIncome = weeklyTransactions
-      .filter(t => t.type === TransactionType.INCOME)
-      .reduce((sum, t) => sum + t.amount, 0);
-    const weeklyExpense = weeklyTransactions
-      .filter(t => t.type === TransactionType.EXPENSE)
-      .reduce((sum, t) => sum + t.amount, 0);
+    const { weeklyIncome, weeklyExpense } = transactions.reduce(
+      (acc, t) => {
+        if (t.date >= startOfWeekStr) {
+          if (t.type === TransactionType.INCOME) {
+            acc.weeklyIncome += t.amount;
+          } else if (t.type === TransactionType.EXPENSE) {
+            acc.weeklyExpense += t.amount;
+          }
+        }
+        return acc;
+      },
+      { weeklyIncome: 0, weeklyExpense: 0 }
+    );
     const weeklySavings = weeklyIncome - weeklyExpense;
 
     updatedData.challenge.progress = Math.max(0, weeklySavings);
     updatedData.challenge.isComplete = weeklySavings >= updatedData.challenge.target;
 
     if (lastTransactionDateStr !== updatedData.lastStreakUpdateDate) {
-      const transactionsForLastDay = transactions.filter(t => t.date === lastTransactionDateStr);
-      const dayIncome = transactionsForLastDay
-        .filter(t => t.type === TransactionType.INCOME)
-        .reduce((sum, t) => sum + t.amount, 0);
-      const dayExpense = transactionsForLastDay
-        .filter(t => t.type === TransactionType.EXPENSE)
-        .reduce((sum, t) => sum + t.amount, 0);
+      const { dayIncome, dayExpense } = transactions.reduce(
+        (acc, t) => {
+          if (t.date === lastTransactionDateStr) {
+            if (t.type === TransactionType.INCOME) {
+              acc.dayIncome += t.amount;
+            } else if (t.type === TransactionType.EXPENSE) {
+              acc.dayExpense += t.amount;
+            }
+          }
+          return acc;
+        },
+        { dayIncome: 0, dayExpense: 0 }
+      );
 
       if (dayIncome > dayExpense) {
         const yesterday = new Date(today);

@@ -251,7 +251,9 @@ const SubscriptionForm: FC<SubscriptionFormProps> = ({ onAddSubscription, onClos
                   type='button'
                   onClick={() => setFormData(prev => ({ ...prev, color }))}
                   className={`w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-all ${
-                    formData.color === color ? 'border-blue-500 scale-110 ring-2 ring-blue-200' : 'border-gray-300'
+                    formData.color === color
+                      ? 'border-blue-500 scale-110 ring-2 ring-blue-200'
+                      : 'border-gray-300'
                   }`}
                   style={{ backgroundColor: color }}
                   aria-label={`Select ${color} color`}
