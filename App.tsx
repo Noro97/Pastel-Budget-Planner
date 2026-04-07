@@ -30,12 +30,17 @@ const App = () => {
   };
 
   const { totalIncome, totalExpense, balance } = useMemo(() => {
-    const income = transactions
-      .filter(t => t.type === TransactionType.INCOME)
-      .reduce((acc, t) => acc + t.amount, 0);
-    const expense = transactions
-      .filter(t => t.type === TransactionType.EXPENSE)
-      .reduce((acc, t) => acc + t.amount, 0);
+    const { income, expense } = transactions.reduce(
+      (acc, t) => {
+        if (t.type === TransactionType.INCOME) {
+          acc.income += t.amount;
+        } else if (t.type === TransactionType.EXPENSE) {
+          acc.expense += t.amount;
+        }
+        return acc;
+      },
+      { income: 0, expense: 0 }
+    );
     return {
       totalIncome: income,
       totalExpense: expense,

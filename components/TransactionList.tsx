@@ -44,7 +44,9 @@ const TransactionItem = ({ transaction, onDelete }: TransactionItemProps) => {
       <div className='flex items-center space-x-3 sm:space-x-4 flex-1'>
         <div className={`w-1 sm:w-1.5 h-12 sm:h-10 rounded-full ${borderColor}`}></div>
         <div className='flex-1 min-w-0'>
-          <p className={`font-semibold ${COLORS.neutral.text.primary} text-sm md:text-base truncate`}>
+          <p
+            className={`font-semibold ${COLORS.neutral.text.primary} text-sm md:text-base truncate`}
+          >
             {transaction.description}
           </p>
           <p className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-0.5`}>

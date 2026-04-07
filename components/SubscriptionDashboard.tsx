@@ -107,7 +107,9 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
           <div className={`text-xl md:text-2xl font-bold ${COLORS.neutral.text.primary}`}>
             {stats.activeSubscriptions}
           </div>
-          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Active Subscriptions</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>
+            Active Subscriptions
+          </div>
         </div>
 
         <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
@@ -117,7 +119,9 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
           >
             {stats.upcomingThisWeek}
           </div>
-          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Due This Week</div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>
+            Due This Week
+          </div>
         </div>
 
         <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
