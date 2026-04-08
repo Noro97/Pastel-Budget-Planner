@@ -220,23 +220,26 @@ export const useSubscriptions = (
   }, [reminders]);
 
   // Calculate total monthly subscription cost
+  // Optimization: Single-pass reduce instead of .filter().reduce()
   const totalMonthlySubscriptionCost = useMemo(() => {
-    return subscriptions
-      .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
-      .reduce((total, sub) => {
-        switch (sub.frequency) {
-          case SubscriptionFrequency.WEEKLY:
-            return total + sub.amount * 4.33; // Average weeks per month
-          case SubscriptionFrequency.MONTHLY:
-            return total + sub.amount;
-          case SubscriptionFrequency.QUARTERLY:
-            return total + sub.amount / 3;
-          case SubscriptionFrequency.YEARLY:
-            return total + sub.amount / 12;
-          default:
-            return total;
-        }
-      }, 0);
+    return subscriptions.reduce((total, sub) => {
+      if (sub.status !== SubscriptionStatus.ACTIVE) {
+        return total;
+      }
+
+      switch (sub.frequency) {
+        case SubscriptionFrequency.WEEKLY:
+          return total + sub.amount * 4.33; // Average weeks per month
+        case SubscriptionFrequency.MONTHLY:
+          return total + sub.amount;
+        case SubscriptionFrequency.QUARTERLY:
+          return total + sub.amount / 3;
+        case SubscriptionFrequency.YEARLY:
+          return total + sub.amount / 12;
+        default:
+          return total;
+      }
+    }, 0);
   }, [subscriptions]);
 
   // Auto-generate reminders periodically
