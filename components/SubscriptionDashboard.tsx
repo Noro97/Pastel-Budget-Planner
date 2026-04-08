@@ -230,23 +230,25 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                   Spending by Category
                 </h3>
                 {(() => {
-                  const categoryTotals = subscriptions
-                    .filter(sub => sub.status === 'active')
-                    .reduce(
-                      (acc, sub) => {
-                        const monthlyAmount =
-                          sub.frequency === 'weekly'
-                            ? sub.amount * 4.33
-                            : sub.frequency === 'monthly'
-                              ? sub.amount
-                              : sub.frequency === 'quarterly'
-                                ? sub.amount / 3
-                                : sub.amount / 12;
-                        acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+                  // Optimization: Single-pass reduce instead of .filter().reduce()
+                  const categoryTotals = subscriptions.reduce(
+                    (acc, sub) => {
+                      if (sub.status !== 'active') {
                         return acc;
-                      },
-                      {} as Record<string, number>
-                    );
+                      }
+                      const monthlyAmount =
+                        sub.frequency === 'weekly'
+                          ? sub.amount * 4.33
+                          : sub.frequency === 'monthly'
+                            ? sub.amount
+                            : sub.frequency === 'quarterly'
+                              ? sub.amount / 3
+                              : sub.amount / 12;
+                      acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+                      return acc;
+                    },
+                    {} as Record<string, number>
+                  );
 
                   const sortedCategories = Object.entries(categoryTotals)
                     .sort(([, a], [, b]) => (b as number) - (a as number))
