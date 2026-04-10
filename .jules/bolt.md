@@ -1,0 +1,3 @@
+## 2023-10-27 - [Chained Array Methods in React Render]
+**Learning:** React components (like SubscriptionDashboard) often contain chained array methods (e.g., multiple `.filter(...).length` or `.filter(...).reduce(...)`) inside the render body or inside local calculation functions like `getQuickStats`. This results in multiple N/M iterations and the allocation of intermediate arrays during every component render.
+**Action:** Replace chained array methods with single-pass `for...of` loops or `.reduce(...)` when aggregating values to reduce garbage collection overhead and loop iterations. Keep these single-pass operations clearly commented.
