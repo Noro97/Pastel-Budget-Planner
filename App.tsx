@@ -49,15 +49,12 @@ const App = () => {
   }, [transactions]);
 
   const currentMonthTransactions = useMemo(() => {
+    // ⚡ Bolt: Prevent O(N) Date constructions and timezone parsing bugs by formatting
+    // the current date as a YYYY-MM string and using a fast string comparison (.startsWith).
     const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    return transactions.filter(t => {
-      const transactionDate = new Date(t.date);
-      return (
-        transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear
-      );
-    });
+    const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    return transactions.filter(t => t.date.startsWith(currentYearMonth));
   }, [transactions]);
 
   useGamification(transactions, gamificationData, setGamificationData, { balance });
