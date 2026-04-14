@@ -50,14 +50,12 @@ const App = () => {
 
   const currentMonthTransactions = useMemo(() => {
     const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    return transactions.filter(t => {
-      const transactionDate = new Date(t.date);
-      return (
-        transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear
-      );
-    });
+    // ⚡ Bolt: Optimize date filtering by using string prefix matching instead of parsing Date objects
+    // This avoids slow `new Date()` calls inside the loop, improving performance on large arrays.
+    const currentMonthStr = (today.getMonth() + 1).toString().padStart(2, '0');
+    const currentYearStr = today.getFullYear().toString();
+    const prefix = `${currentYearStr}-${currentMonthStr}`;
+    return transactions.filter(t => t.date.startsWith(prefix));
   }, [transactions]);
 
   useGamification(transactions, gamificationData, setGamificationData, { balance });
