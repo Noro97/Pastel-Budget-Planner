@@ -252,6 +252,12 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                     .sort(([, a], [, b]) => (b as number) - (a as number))
                     .slice(0, 6);
 
+                  // Optimization: Hoist O(N) max calculation outside of the .map() loop
+                  const maxCategoryAmount = Math.max(
+                    ...(Object.values(categoryTotals) as number[]),
+                    1 // Prevent division by zero
+                  );
+
                   return sortedCategories.length > 0 ? (
                     <div className='grid gap-2'>
                       {sortedCategories.map(([category, amount]) => (
@@ -262,7 +268,7 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                               <div
                                 className='bg-blue-500 h-2 rounded-full transition-all'
                                 style={{
-                                  width: `${((amount as number) / Math.max(...(Object.values(categoryTotals) as number[]))) * 100}%`,
+                                  width: `${((amount as number) / maxCategoryAmount) * 100}%`,
                                 }}
                               />
                             </div>
