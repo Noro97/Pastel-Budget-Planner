@@ -156,8 +156,7 @@ export const useSubscriptions = (
           if (daysDifference === reminderDay || daysDifference === 0) {
             const existingReminder = reminders.find(
               r =>
-                r.subscriptionId === subscription.id &&
-                new Date(r.dueDate).getTime() === nextPaymentDate.getTime()
+                r.subscriptionId === subscription.id && r.dueDate === subscription.nextPaymentDate // Optimized: Direct string comparison for YYYY-MM-DD equality check
             );
 
             if (!existingReminder) {
@@ -219,7 +218,7 @@ export const useSubscriptions = (
   const activeReminders = useMemo(() => {
     return reminders
       .filter(reminder => !reminder.isDismissed)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      .sort((a, b) => a.dueDate.localeCompare(b.dueDate)); // Optimized: Direct string comparison for YYYY-MM-DD
   }, [reminders]);
 
   // Calculate total monthly subscription cost
