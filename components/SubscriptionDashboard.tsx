@@ -1,4 +1,4 @@
-import { useState, FC, Dispatch, SetStateAction } from 'react';
+import { useState, useMemo, FC, Dispatch, SetStateAction } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { useSubscriptions } from '../hooks/useSubscriptions';
@@ -42,6 +42,38 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
       currency: 'USD',
     }).format(amount);
   };
+
+  // Optimization: Memoize category spending breakdown to prevent O(N) filtering, frequency normalization, aggregation, and sorting on every render
+  const { sortedCategories, maxCategoryAmount } = useMemo(() => {
+    const categoryTotals = subscriptions
+      .filter(sub => sub.status === 'active')
+      .reduce(
+        (acc, sub) => {
+          const monthlyAmount =
+            sub.frequency === 'weekly'
+              ? sub.amount * 4.33
+              : sub.frequency === 'monthly'
+                ? sub.amount
+                : sub.frequency === 'quarterly'
+                  ? sub.amount / 3
+                  : sub.amount / 12;
+          acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
+    const sorted = Object.entries(categoryTotals)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .slice(0, 6);
+
+    const maxAmount = Math.max(
+      ...(Object.values(categoryTotals) as number[]),
+      1 // Prevent division by zero
+    );
+
+    return { sortedCategories: sorted, maxCategoryAmount: maxAmount };
+  }, [subscriptions]);
 
   const getQuickStats = () => {
     const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active');
@@ -229,62 +261,32 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                 <h3 className={`${TYPOGRAPHY.heading.lg} ${COLORS.neutral.text.primary} mb-4`}>
                   Spending by Category
                 </h3>
-                {(() => {
-                  const categoryTotals = subscriptions
-                    .filter(sub => sub.status === 'active')
-                    .reduce(
-                      (acc, sub) => {
-                        const monthlyAmount =
-                          sub.frequency === 'weekly'
-                            ? sub.amount * 4.33
-                            : sub.frequency === 'monthly'
-                              ? sub.amount
-                              : sub.frequency === 'quarterly'
-                                ? sub.amount / 3
-                                : sub.amount / 12;
-                        acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
-                        return acc;
-                      },
-                      {} as Record<string, number>
-                    );
-
-                  const sortedCategories = Object.entries(categoryTotals)
-                    .sort(([, a], [, b]) => (b as number) - (a as number))
-                    .slice(0, 6);
-
-                  // Optimization: Hoist O(N) max calculation outside of the .map() loop
-                  const maxCategoryAmount = Math.max(
-                    ...(Object.values(categoryTotals) as number[]),
-                    1 // Prevent division by zero
-                  );
-
-                  return sortedCategories.length > 0 ? (
-                    <div className='grid gap-2'>
-                      {sortedCategories.map(([category, amount]) => (
-                        <div key={category} className='flex items-center justify-between py-2'>
-                          <span className='text-slate-700'>{category}</span>
-                          <div className='flex items-center gap-2'>
-                            <div className='w-20 md:w-24 bg-gray-200 rounded-full h-2'>
-                              <div
-                                className='bg-blue-500 h-2 rounded-full transition-all'
-                                style={{
-                                  width: `${((amount as number) / maxCategoryAmount) * 100}%`,
-                                }}
-                              />
-                            </div>
-                            <span className='font-semibold text-slate-800 w-20 text-right'>
-                              {formatCurrency(amount as number)}
-                            </span>
+                {sortedCategories.length > 0 ? (
+                  <div className='grid gap-2'>
+                    {sortedCategories.map(([category, amount]) => (
+                      <div key={category} className='flex items-center justify-between py-2'>
+                        <span className='text-slate-700'>{category}</span>
+                        <div className='flex items-center gap-2'>
+                          <div className='w-20 md:w-24 bg-gray-200 rounded-full h-2'>
+                            <div
+                              className='bg-blue-500 h-2 rounded-full transition-all'
+                              style={{
+                                width: `${((amount as number) / maxCategoryAmount) * 100}%`,
+                              }}
+                            />
                           </div>
+                          <span className='font-semibold text-slate-800 w-20 text-right'>
+                            {formatCurrency(amount as number)}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className={`${COLORS.neutral.text.muted} text-center py-4`}>
-                      No active subscriptions to analyze
-                    </p>
-                  );
-                })()}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={`${COLORS.neutral.text.muted} text-center py-4`}>
+                    No active subscriptions to analyze
+                  </p>
+                )}
               </div>
             </div>
           )}
