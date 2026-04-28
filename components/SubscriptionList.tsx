@@ -96,7 +96,8 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
         case 'amount':
           return b.amount - a.amount;
         case 'nextPayment':
-          return new Date(a.nextPaymentDate).getTime() - new Date(b.nextPaymentDate).getTime();
+          // Optimization: Use string localeCompare instead of parsing Date objects for O(N log N) sorting
+          return a.nextPaymentDate.localeCompare(b.nextPaymentDate);
         default:
           return 0;
       }

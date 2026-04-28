@@ -226,7 +226,8 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
               <div className='space-y-3'>
                 {reminders
                   .filter(reminder => !reminder.isDismissed)
-                  .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+                  // Optimization: Use string localeCompare instead of parsing Date objects for O(N log N) sorting
+                  .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
                   .map(reminder => {
                     const subscription = getSubscriptionDetails(reminder.subscriptionId);
                     if (!subscription) {
