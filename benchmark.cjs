@@ -1,3 +1,4 @@
+/* global console */
 const { performance } = require('perf_hooks');
 
 const TransactionType = {

@@ -217,9 +217,12 @@ export const useSubscriptions = (
 
   // Get active reminders (not dismissed)
   const activeReminders = useMemo(() => {
-    return reminders
-      .filter(reminder => !reminder.isDismissed)
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    return (
+      reminders
+        .filter(reminder => !reminder.isDismissed)
+        // Optimization: Use string localeCompare instead of parsing Date objects for O(N log N) sorting
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    );
   }, [reminders]);
 
   // Calculate total monthly subscription cost
