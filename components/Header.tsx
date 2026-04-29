@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { COLORS, SPACING, TYPOGRAPHY } from '../design-system';
+import { SPACING, TYPOGRAPHY } from '../design-system';
 
 const Header = () => {
   return (

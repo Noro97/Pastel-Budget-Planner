@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { COMPONENTS, COLORS, TYPOGRAPHY } from '../design-system';
+import { COMPONENTS, COLORS } from '../design-system';
 
 interface SummaryProps {
   totalIncome: number;
