@@ -88,10 +88,7 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
       .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 6);
 
-    const maxCategoryAmount = Math.max(
-      ...(Object.values(categoryTotals) as number[]),
-      1
-    );
+    const maxCategoryAmount = Math.max(...(Object.values(categoryTotals) as number[]), 1);
 
     return { sortedCategories, maxCategoryAmount };
   }, [subscriptions]);

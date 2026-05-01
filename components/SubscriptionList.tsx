@@ -96,7 +96,9 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
         case 'amount':
           return b.amount - a.amount;
         case 'nextPayment':
-          return new Date(a.nextPaymentDate).getTime() - new Date(b.nextPaymentDate).getTime();
+          // ⚡ Bolt Optimization: Use string comparison instead of expensive Date object parsing
+          // This is safe because dates are formatted as YYYY-MM-DD ISO strings.
+          return a.nextPaymentDate.localeCompare(b.nextPaymentDate);
         default:
           return 0;
       }
