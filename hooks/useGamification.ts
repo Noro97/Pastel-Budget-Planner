@@ -38,26 +38,24 @@ export const useGamification = (
   stats: { balance: number }
 ) => {
   const prevDataRef = useRef<string>('');
-  const prevTransactionsRef = useRef<string>('');
-  const prevStatsRef = useRef<string>('');
+  const prevTransactionsRef = useRef<Transaction[]>([]);
+  const prevStatsBalanceRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (transactions.length === 0) {
       return;
     }
 
-    const transactionsString = JSON.stringify(transactions);
-    const statsString = JSON.stringify(stats);
-
+    // Optimization: Replace O(N) JSON.stringify with O(1) reference equality check
     if (
-      prevTransactionsRef.current === transactionsString &&
-      prevStatsRef.current === statsString
+      prevTransactionsRef.current === transactions &&
+      prevStatsBalanceRef.current === stats.balance
     ) {
       return;
     }
 
-    prevTransactionsRef.current = transactionsString;
-    prevStatsRef.current = statsString;
+    prevTransactionsRef.current = transactions;
+    prevStatsBalanceRef.current = stats.balance;
 
     const today = new Date();
     const lastTransaction = transactions[0];
