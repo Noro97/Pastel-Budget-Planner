@@ -60,7 +60,7 @@ const App = () => {
     });
   }, [transactions]);
 
-  useGamification(transactions, gamificationData, setGamificationData, { balance });
+  useGamification(transactions, gamificationData, setGamificationData, balance);
 
   return (
     <div

@@ -35,29 +35,16 @@ export const useGamification = (
   transactions: Transaction[],
   gamificationData: GamificationData,
   setGamificationData: Dispatch<SetStateAction<GamificationData>>,
-  stats: { balance: number }
+  balance: number
 ) => {
   const prevDataRef = useRef<string>('');
-  const prevTransactionsRef = useRef<string>('');
-  const prevStatsRef = useRef<string>('');
 
   useEffect(() => {
+    // ⚡ Bolt: Removed JSON.stringify() dependency checks to prevent O(N) serialization on every render.
+    // Relying on standard React reference equality for `transactions` array and primitive equality for `balance`.
     if (transactions.length === 0) {
       return;
     }
-
-    const transactionsString = JSON.stringify(transactions);
-    const statsString = JSON.stringify(stats);
-
-    if (
-      prevTransactionsRef.current === transactionsString &&
-      prevStatsRef.current === statsString
-    ) {
-      return;
-    }
-
-    prevTransactionsRef.current = transactionsString;
-    prevStatsRef.current = statsString;
 
     const today = new Date();
     const lastTransaction = transactions[0];
@@ -66,7 +53,7 @@ export const useGamification = (
 
     const updatedData = { ...gamificationData };
 
-    const newBadgeIds = checkBadgeConditions(transactions, stats);
+    const newBadgeIds = checkBadgeConditions(transactions, { balance });
     const allUnlockedIds = [...new Set([...updatedData.unlockedBadgeIds, ...newBadgeIds])];
     if (allUnlockedIds.length > updatedData.unlockedBadgeIds.length) {
       updatedData.unlockedBadgeIds = allUnlockedIds;
@@ -140,5 +127,5 @@ export const useGamification = (
       prevDataRef.current = updatedDataString;
       setGamificationData(updatedData);
     }
-  }, [transactions, stats]);
+  }, [transactions, balance]);
 };

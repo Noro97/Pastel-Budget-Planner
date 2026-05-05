@@ -1,0 +1,3 @@
+## 2024-05-24 - React hook dependency checks via JSON.stringify
+**Learning:** In React, checking dependencies inside `useEffect` or other hooks using `JSON.stringify` (e.g., `JSON.stringify(transactions)`) creates a hidden O(N) bottleneck, performing a full serialization of potentially large arrays or objects on every render.
+**Action:** Replace `JSON.stringify` for dependency tracking with reference equality checks (when the object references change on new state) or direct primitive comparisons (e.g., extracting `stats.balance` to compare). If deep comparison is absolutely needed, consider using a custom hook like `useDeepCompareEffect` or memoizing the value properly, but never use `JSON.stringify` for this purpose.
