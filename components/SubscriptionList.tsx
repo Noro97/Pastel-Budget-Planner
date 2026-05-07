@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useState, useMemo, FC } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { Subscription, SubscriptionStatus, SubscriptionFrequency } from '../types';
@@ -82,25 +82,30 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
     }
   };
 
-  const filteredAndSortedSubscriptions = subscriptions
-    .filter(sub => {
-      if (filter === 'all') {
-        return true;
-      }
-      return sub.status === filter;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'amount':
-          return b.amount - a.amount;
-        case 'nextPayment':
-          return new Date(a.nextPaymentDate).getTime() - new Date(b.nextPaymentDate).getTime();
-        default:
-          return 0;
-      }
-    });
+  // Optimization: Memoize the filtered and sorted subscriptions to prevent O(N log N) work on every render
+  const filteredAndSortedSubscriptions = useMemo(() => {
+    return subscriptions
+      .filter(sub => {
+        if (filter === 'all') {
+          return true;
+        }
+        return sub.status === filter;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'amount':
+            return b.amount - a.amount;
+          case 'nextPayment':
+            // Optimization: Date strings are in 'YYYY-MM-DD' format, so we can sort them using string comparison
+            // to avoid the performance overhead of parsing Dates in an O(N log N) sort operation
+            return a.nextPaymentDate.localeCompare(b.nextPaymentDate);
+          default:
+            return 0;
+        }
+      });
+  }, [subscriptions, filter, sortBy]);
 
   const handleEdit = (_subscription: Subscription) => {
     // Edit functionality can be implemented here when needed
