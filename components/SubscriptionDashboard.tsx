@@ -44,20 +44,39 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
   };
 
   const getQuickStats = () => {
-    const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active');
-    const pausedSubscriptions = subscriptions.filter(sub => sub.status === 'paused');
-    const cancelledSubscriptions = subscriptions.filter(sub => sub.status === 'cancelled');
+    let activeSubscriptions = 0;
+    let pausedSubscriptions = 0;
+    let cancelledSubscriptions = 0;
 
-    const upcomingThisWeek = upcomingSubscriptions.filter(sub => sub.daysUntilPayment <= 7);
-    const overduePayments = upcomingSubscriptions.filter(sub => sub.daysUntilPayment < 0);
+    for (const sub of subscriptions) {
+      if (sub.status === 'active') {
+        activeSubscriptions++;
+      } else if (sub.status === 'paused') {
+        pausedSubscriptions++;
+      } else if (sub.status === 'cancelled') {
+        cancelledSubscriptions++;
+      }
+    }
+
+    let upcomingThisWeek = 0;
+    let overduePayments = 0;
+
+    for (const sub of upcomingSubscriptions) {
+      if (sub.daysUntilPayment <= 7) {
+        upcomingThisWeek++;
+      }
+      if (sub.daysUntilPayment < 0) {
+        overduePayments++;
+      }
+    }
 
     return {
       totalSubscriptions: subscriptions.length,
-      activeSubscriptions: activeSubscriptions.length,
-      pausedSubscriptions: pausedSubscriptions.length,
-      cancelledSubscriptions: cancelledSubscriptions.length,
-      upcomingThisWeek: upcomingThisWeek.length,
-      overduePayments: overduePayments.length,
+      activeSubscriptions,
+      pausedSubscriptions,
+      cancelledSubscriptions,
+      upcomingThisWeek,
+      overduePayments,
       totalMonthlySubscriptionCost,
     };
   };
@@ -66,23 +85,24 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
 
   // Optimization: Memoize category breakdown calculations to prevent O(N) recalculation on every render
   const categoryBreakdown = useMemo(() => {
-    const categoryTotals = subscriptions
-      .filter(sub => sub.status === 'active')
-      .reduce(
-        (acc, sub) => {
-          const monthlyAmount =
-            sub.frequency === 'weekly'
-              ? sub.amount * 4.33
-              : sub.frequency === 'monthly'
-                ? sub.amount
-                : sub.frequency === 'quarterly'
-                  ? sub.amount / 3
-                  : sub.amount / 12;
-          acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+    const categoryTotals = subscriptions.reduce(
+      (acc, sub) => {
+        if (sub.status !== 'active') {
           return acc;
-        },
-        {} as Record<string, number>
-      );
+        }
+        const monthlyAmount =
+          sub.frequency === 'weekly'
+            ? sub.amount * 4.33
+            : sub.frequency === 'monthly'
+              ? sub.amount
+              : sub.frequency === 'quarterly'
+                ? sub.amount / 3
+                : sub.amount / 12;
+        acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const sortedCategories = Object.entries(categoryTotals)
       .sort(([, a], [, b]) => (b as number) - (a as number))

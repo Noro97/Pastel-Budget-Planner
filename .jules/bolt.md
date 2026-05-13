@@ -1,4 +1,8 @@
 
+## 2023-10-27 - [Chained Array Methods in React Render]
+**Learning:** React components (like SubscriptionDashboard) often contain chained array methods (e.g., multiple `.filter(...).length` or `.filter(...).reduce(...)`) inside the render body or inside local calculation functions like `getQuickStats`. This results in multiple N/M iterations and the allocation of intermediate arrays during every component render.
+**Action:** Replace chained array methods with single-pass `for...of` loops or `.reduce(...)` when aggregating values to reduce garbage collection overhead and loop iterations. Keep these single-pass operations clearly commented.
+
 ## 2024-05-15 - Fast Date Filtering via String Matching
 
 **Learning:** Instantiating `new Date(string)` inside `.filter()` or `.map()` loops is a significant O(N) performance bottleneck. When date strings are strictly formatted as ISO strings (e.g., `YYYY-MM-DD`), string matching (like `.startsWith()` or `.localeCompare()`) is ~85% faster. This approach also prevents elusive UTC vs local timezone offset bugs that can occur when converting strict date strings back and forth to Date objects.
