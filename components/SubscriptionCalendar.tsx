@@ -38,12 +38,22 @@ const SubscriptionCalendar: FC<SubscriptionCalendarProps> = ({
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const getSubscriptionsForDate = (date: Date): Subscription[] => {
-    const dateString = date.toISOString().split('T')[0];
-    return subscriptions.filter(sub => sub.nextPaymentDate === dateString);
-  };
-
   const calendarDays = useMemo(() => {
+    // Optimization: Pre-calculate O(1) lookup map to avoid O(N * 42) bottleneck
+    const subscriptionsByDate = subscriptions.reduce((acc, sub) => {
+      const date = sub.nextPaymentDate;
+      if (!acc.has(date)) {
+        acc.set(date, []);
+      }
+      acc.get(date)!.push(sub);
+      return acc;
+    }, new Map<string, Subscription[]>());
+
+    const getSubscriptionsForDate = (date: Date): Subscription[] => {
+      const dateString = date.toISOString().split('T')[0];
+      return subscriptionsByDate.get(dateString) || [];
+    };
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
