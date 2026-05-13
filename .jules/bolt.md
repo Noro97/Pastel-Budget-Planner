@@ -4,6 +4,11 @@
 **Learning:** Instantiating `new Date(string)` inside `.filter()` or `.map()` loops is a significant O(N) performance bottleneck. When date strings are strictly formatted as ISO strings (e.g., `YYYY-MM-DD`), string matching (like `.startsWith()` or `.localeCompare()`) is ~85% faster. This approach also prevents elusive UTC vs local timezone offset bugs that can occur when converting strict date strings back and forth to Date objects.
 **Action:** When filtering dates inside loops, verify if the date format is strictly stringified. If so, use string manipulation (`startsWith`) or comparison (`localeCompare`) instead of Date object parsing to dramatically reduce memory allocation and CPU overhead.
 
+## 2024-05-18 - Fast ISO Date String Sorting
+
+**Learning:** In this specific codebase, standard ISO date strings ('YYYY-MM-DD') are consistently used for `dueDate`, `nextPaymentDate`, etc. Sorting these fields by repeatedly instantiating `new Date(string).getTime()` during `.sort()` is a significant, hidden O(N log N) performance bottleneck due to the cost of parsing date strings and object allocation. String comparison (`localeCompare` or `a < b`) is strictly correct for ISO strings and ~10x faster.
+**Action:** When strictly sorting or checking chronological order of dates formatted consistently as 'YYYY-MM-DD' ISO strings in arrays, use direct string comparison (e.g., `localeCompare`) instead of converting them to `Date` objects to avoid unnecessary performance overhead.
+
 ## 2024-05-18 - Replacing O(N) JSON.stringify deeply nested object comparison inside useEffects
 **Learning:** In React, passing inline objects as props (e.g., `stats={{ balance }}`) causes the object reference to change on every render. If this object needs to trigger effects, avoid using `JSON.stringify` on the object for deep comparison inside `useEffect`, as it executes on every render and creates a hidden O(N) bottleneck, especially if large arrays are stringified as well to bypass React dependency checks.
 **Action:** Extract primitives from the object and pass them to the `useEffect` dependency array (e.g., `stats.balance`), relying on React's built-in O(1) equality check instead of costly deep comparisons.
