@@ -38,26 +38,12 @@ export const useGamification = (
   stats: { balance: number }
 ) => {
   const prevDataRef = useRef<string>('');
-  const prevTransactionsRef = useRef<string>('');
-  const prevStatsRef = useRef<string>('');
 
+  const balance = stats.balance;
   useEffect(() => {
     if (transactions.length === 0) {
       return;
     }
-
-    const transactionsString = JSON.stringify(transactions);
-    const statsString = JSON.stringify(stats);
-
-    if (
-      prevTransactionsRef.current === transactionsString &&
-      prevStatsRef.current === statsString
-    ) {
-      return;
-    }
-
-    prevTransactionsRef.current = transactionsString;
-    prevStatsRef.current = statsString;
 
     const today = new Date();
     const lastTransaction = transactions[0];
@@ -66,7 +52,7 @@ export const useGamification = (
 
     const updatedData = { ...gamificationData };
 
-    const newBadgeIds = checkBadgeConditions(transactions, stats);
+    const newBadgeIds = checkBadgeConditions(transactions, { balance });
     const allUnlockedIds = [...new Set([...updatedData.unlockedBadgeIds, ...newBadgeIds])];
     if (allUnlockedIds.length > updatedData.unlockedBadgeIds.length) {
       updatedData.unlockedBadgeIds = allUnlockedIds;
@@ -140,5 +126,5 @@ export const useGamification = (
       prevDataRef.current = updatedDataString;
       setGamificationData(updatedData);
     }
-  }, [transactions, stats]);
+  }, [transactions, balance, gamificationData, setGamificationData]);
 };
