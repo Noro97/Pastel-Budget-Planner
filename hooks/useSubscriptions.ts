@@ -144,37 +144,41 @@ export const useSubscriptions = (
     const today = new Date();
     const newReminders: BillReminder[] = [];
 
-    subscriptions
-      .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
-      .forEach(subscription => {
-        const nextPaymentDate = new Date(subscription.nextPaymentDate);
-        const daysDifference = Math.ceil(
-          (nextPaymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
+    // ⚡ Bolt Optimization: Replace O(N*M) nested array.find with O(1) Set lookup using compound string keys
+    const existingReminderKeys = new Set(reminders.map(r => `${r.subscriptionId}-${r.dueDate}`));
 
-        subscription.reminderDays.forEach(reminderDay => {
-          if (daysDifference === reminderDay || daysDifference === 0) {
-            const existingReminder = reminders.find(
-              r =>
-                r.subscriptionId === subscription.id &&
-                new Date(r.dueDate).getTime() === nextPaymentDate.getTime()
-            );
+    // ⚡ Bolt Optimization: Use single-pass for...of loop instead of .filter().forEach()
+    for (const subscription of subscriptions) {
+      if (subscription.status !== SubscriptionStatus.ACTIVE) {
+        continue;
+      }
 
-            if (!existingReminder) {
-              newReminders.push({
-                id: crypto.randomUUID(),
-                subscriptionId: subscription.id,
-                dueDate: subscription.nextPaymentDate,
-                amount: subscription.amount,
-                isRead: false,
-                isDismissed: false,
-                type:
-                  daysDifference === 0 ? 'due_today' : daysDifference < 0 ? 'overdue' : 'upcoming',
-              });
-            }
+      const nextPaymentDate = new Date(subscription.nextPaymentDate);
+      const daysDifference = Math.ceil(
+        (nextPaymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      for (const reminderDay of subscription.reminderDays) {
+        if (daysDifference === reminderDay || daysDifference === 0) {
+          const reminderKey = `${subscription.id}-${subscription.nextPaymentDate}`;
+
+          if (!existingReminderKeys.has(reminderKey)) {
+            newReminders.push({
+              id: crypto.randomUUID(),
+              subscriptionId: subscription.id,
+              dueDate: subscription.nextPaymentDate,
+              amount: subscription.amount,
+              isRead: false,
+              isDismissed: false,
+              type:
+                daysDifference === 0 ? 'due_today' : daysDifference < 0 ? 'overdue' : 'upcoming',
+            });
+            // Prevent duplicates within the same generation pass if multiple reminderDays match
+            existingReminderKeys.add(reminderKey);
           }
-        });
-      });
+        }
+      }
+    }
 
     if (newReminders.length > 0) {
       setReminders(prev => [...prev, ...newReminders]);
@@ -228,22 +232,24 @@ export const useSubscriptions = (
 
   // Calculate total monthly subscription cost
   const totalMonthlySubscriptionCost = useMemo(() => {
-    return subscriptions
-      .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
-      .reduce((total, sub) => {
-        switch (sub.frequency) {
-          case SubscriptionFrequency.WEEKLY:
-            return total + sub.amount * 4.33; // Average weeks per month
-          case SubscriptionFrequency.MONTHLY:
-            return total + sub.amount;
-          case SubscriptionFrequency.QUARTERLY:
-            return total + sub.amount / 3;
-          case SubscriptionFrequency.YEARLY:
-            return total + sub.amount / 12;
-          default:
-            return total;
-        }
-      }, 0);
+    // ⚡ Bolt Optimization: Use single-pass reduce instead of chaining .filter().reduce()
+    return subscriptions.reduce((total, sub) => {
+      if (sub.status !== SubscriptionStatus.ACTIVE) {
+        return total;
+      }
+      switch (sub.frequency) {
+        case SubscriptionFrequency.WEEKLY:
+          return total + sub.amount * 4.33; // Average weeks per month
+        case SubscriptionFrequency.MONTHLY:
+          return total + sub.amount;
+        case SubscriptionFrequency.QUARTERLY:
+          return total + sub.amount / 3;
+        case SubscriptionFrequency.YEARLY:
+          return total + sub.amount / 12;
+        default:
+          return total;
+      }
+    }, 0);
   }, [subscriptions]);
 
   // Auto-generate reminders periodically
