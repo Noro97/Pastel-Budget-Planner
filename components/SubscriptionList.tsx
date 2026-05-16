@@ -51,10 +51,16 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
     }
   };
 
+  // Optimization: Cache `todayActualTime` and `todayStr` once per render to avoid O(N)
+  // `new Date()` allocations inside the `.map` operations for list rendering.
+  const today = new Date();
+  const todayActualTime = today.getTime();
+  // Using ISO string comparison for dates avoids new Date() in `isPaymentDue`
+  const todayStr = today.toISOString().split('T')[0];
+
   const getDaysUntilPayment = (nextPaymentDate: string) => {
-    const today = new Date();
     const paymentDate = new Date(nextPaymentDate);
-    const diffTime = paymentDate.getTime() - today.getTime();
+    const diffTime = paymentDate.getTime() - todayActualTime;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
@@ -112,9 +118,7 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
   };
 
   const isPaymentDue = (nextPaymentDate: string) => {
-    const today = new Date();
-    const paymentDate = new Date(nextPaymentDate);
-    return paymentDate <= today;
+    return nextPaymentDate.slice(0, 10) <= todayStr;
   };
 
   return (
