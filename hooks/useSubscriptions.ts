@@ -142,39 +142,45 @@ export const useSubscriptions = (
   // Generate reminders for upcoming subscriptions
   const generateReminders = () => {
     const today = new Date();
+    const todayTime = today.getTime();
     const newReminders: BillReminder[] = [];
 
-    subscriptions
-      .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
-      .forEach(subscription => {
-        const nextPaymentDate = new Date(subscription.nextPaymentDate);
-        const daysDifference = Math.ceil(
-          (nextPaymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
+    // Optimization: Pre-calculate existing reminders into a Set for O(1) lookups
+    const existingReminderKeys = new Set(reminders.map(r => `${r.subscriptionId}-${r.dueDate}`));
 
-        subscription.reminderDays.forEach(reminderDay => {
-          if (daysDifference === reminderDay || daysDifference === 0) {
-            const existingReminder = reminders.find(
-              r =>
-                r.subscriptionId === subscription.id &&
-                new Date(r.dueDate).getTime() === nextPaymentDate.getTime()
-            );
+    for (let i = 0; i < subscriptions.length; i++) {
+      const subscription = subscriptions[i];
+      if (subscription.status !== SubscriptionStatus.ACTIVE) {
+        continue;
+      }
 
-            if (!existingReminder) {
-              newReminders.push({
-                id: crypto.randomUUID(),
-                subscriptionId: subscription.id,
-                dueDate: subscription.nextPaymentDate,
-                amount: subscription.amount,
-                isRead: false,
-                isDismissed: false,
-                type:
-                  daysDifference === 0 ? 'due_today' : daysDifference < 0 ? 'overdue' : 'upcoming',
-              });
-            }
+      const nextPaymentDate = subscription.nextPaymentDate;
+      const nextPaymentDateObj = new Date(nextPaymentDate);
+      const daysDifference = Math.ceil(
+        (nextPaymentDateObj.getTime() - todayTime) / (1000 * 60 * 60 * 24)
+      );
+
+      for (let j = 0; j < subscription.reminderDays.length; j++) {
+        const reminderDay = subscription.reminderDays[j];
+        if (daysDifference === reminderDay || daysDifference === 0) {
+          const reminderKey = `${subscription.id}-${nextPaymentDate}`;
+
+          if (!existingReminderKeys.has(reminderKey)) {
+            newReminders.push({
+              id: crypto.randomUUID(),
+              subscriptionId: subscription.id,
+              dueDate: nextPaymentDate,
+              amount: subscription.amount,
+              isRead: false,
+              isDismissed: false,
+              type:
+                daysDifference === 0 ? 'due_today' : daysDifference < 0 ? 'overdue' : 'upcoming',
+            });
+            existingReminderKeys.add(reminderKey); // Prevent duplicates within the same run
           }
-        });
-      });
+        }
+      }
+    }
 
     if (newReminders.length > 0) {
       setReminders(prev => [...prev, ...newReminders]);
