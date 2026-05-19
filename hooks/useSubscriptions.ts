@@ -144,6 +144,9 @@ export const useSubscriptions = (
     const today = new Date();
     const newReminders: BillReminder[] = [];
 
+    // Optimization: Use a Set for O(1) lookups instead of O(N) array.find inside the loop
+    const existingReminderKeys = new Set(reminders.map(r => `${r.subscriptionId}-${r.dueDate}`));
+
     subscriptions
       .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
       .forEach(subscription => {
@@ -154,13 +157,10 @@ export const useSubscriptions = (
 
         subscription.reminderDays.forEach(reminderDay => {
           if (daysDifference === reminderDay || daysDifference === 0) {
-            const existingReminder = reminders.find(
-              r =>
-                r.subscriptionId === subscription.id &&
-                new Date(r.dueDate).getTime() === nextPaymentDate.getTime()
-            );
+            const reminderKey = `${subscription.id}-${subscription.nextPaymentDate}`;
+            const hasExistingReminder = existingReminderKeys.has(reminderKey);
 
-            if (!existingReminder) {
+            if (!hasExistingReminder) {
               newReminders.push({
                 id: crypto.randomUUID(),
                 subscriptionId: subscription.id,
