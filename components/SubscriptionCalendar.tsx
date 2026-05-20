@@ -2,6 +2,7 @@ import { useState, useMemo, FC } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { Subscription } from '../types';
+import { formatCurrency } from '../utils/format';
 
 interface SubscriptionCalendarProps {
   subscriptions: Subscription[];
@@ -122,13 +123,6 @@ const SubscriptionCalendar: FC<SubscriptionCalendarProps> = ({
 
   const goToToday = () => {
     setCurrentDate(new Date());
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
   };
 
   const getTotalForDay = (daySubscriptions: Subscription[]) => {
