@@ -2,6 +2,7 @@ import { useState, FC } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { Subscription, SubscriptionStatus, SubscriptionFrequency } from '../types';
+import { formatCurrency } from '../utils/format';
 
 interface SubscriptionListProps {
   subscriptions: Subscription[];
@@ -20,13 +21,6 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
 }) => {
   const [filter, setFilter] = useState<'all' | 'active' | 'paused' | 'cancelled'>('all');
   const [sortBy, setSortBy] = useState<'name' | 'amount' | 'nextPayment'>('nextPayment');
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
