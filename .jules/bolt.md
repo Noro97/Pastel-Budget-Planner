@@ -25,3 +25,8 @@
 ## 2026-04-09 - [Reduce Chained Operations in React Hooks]
 **Learning:** Found multiple instances where `.filter().reduce()` or `.filter().map().sort()` chains were used to process large datasets like transactions and subscriptions (e.g. in `App.tsx` and `useSubscriptions.ts`). The benchmarking shows that iterating through a large dataset multiple times and allocating intermediate arrays takes noticeably more time. Converting `.filter().map()` to a single `for` loop, or `.filter().reduce()` to a single `.reduce()` step leads to faster execution. Additionally, date parsing inside loops (like `new Date(date).getMonth()`) is extremely slow compared to simple string prefix matching when checking if dates fall in the current month.
 **Action:** When working on large datasets in React Hooks (like `transactions` and `subscriptions`), merge chained higher-order functions into a single `.reduce()` or a standard `for...of`/`for` loop, and consider string matching optimizations over `new Date()` when only month/year filtering is needed.
+
+## 2024-05-18 - Fast ISO Date String Sorting in activeReminders
+
+**Learning:** In this specific codebase, standard ISO date strings ('YYYY-MM-DD') are consistently used. Sorting these fields by repeatedly instantiating `new Date(string).getTime()` during `.sort()` is a significant, hidden O(N log N) performance bottleneck. String comparison (`localeCompare` or `a < b`) is strictly correct for ISO strings and ~10x faster. Also, removing chained array methods (`.filter().sort()`) in favor of a single loop before sorting prevents unnecessary intermediate array allocations.
+**Action:** Replaced `.filter().sort()` with a single loop to filter into an array, followed by `.sort()` using simple string comparison.
