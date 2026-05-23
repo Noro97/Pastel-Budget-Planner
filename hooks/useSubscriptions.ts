@@ -144,6 +144,14 @@ export const useSubscriptions = (
     const today = new Date();
     const newReminders: BillReminder[] = [];
 
+    // Optimization: O(1) lookup using compound key instead of array .find()
+    const existingReminderKeys = new Set<string>();
+    for (let i = 0; i < reminders.length; i++) {
+      existingReminderKeys.add(
+        `${reminders[i].subscriptionId}-${new Date(reminders[i].dueDate).getTime()}`
+      );
+    }
+
     subscriptions
       .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
       .forEach(subscription => {
@@ -154,13 +162,8 @@ export const useSubscriptions = (
 
         subscription.reminderDays.forEach(reminderDay => {
           if (daysDifference === reminderDay || daysDifference === 0) {
-            const existingReminder = reminders.find(
-              r =>
-                r.subscriptionId === subscription.id &&
-                new Date(r.dueDate).getTime() === nextPaymentDate.getTime()
-            );
-
-            if (!existingReminder) {
+            const reminderKey = `${subscription.id}-${nextPaymentDate.getTime()}`;
+            if (!existingReminderKeys.has(reminderKey)) {
               newReminders.push({
                 id: crypto.randomUUID(),
                 subscriptionId: subscription.id,
