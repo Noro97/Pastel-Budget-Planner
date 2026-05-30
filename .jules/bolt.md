@@ -25,3 +25,8 @@
 ## 2026-04-09 - [Reduce Chained Operations in React Hooks]
 **Learning:** Found multiple instances where `.filter().reduce()` or `.filter().map().sort()` chains were used to process large datasets like transactions and subscriptions (e.g. in `App.tsx` and `useSubscriptions.ts`). The benchmarking shows that iterating through a large dataset multiple times and allocating intermediate arrays takes noticeably more time. Converting `.filter().map()` to a single `for` loop, or `.filter().reduce()` to a single `.reduce()` step leads to faster execution. Additionally, date parsing inside loops (like `new Date(date).getMonth()`) is extremely slow compared to simple string prefix matching when checking if dates fall in the current month.
 **Action:** When working on large datasets in React Hooks (like `transactions` and `subscriptions`), merge chained higher-order functions into a single `.reduce()` or a standard `for...of`/`for` loop, and consider string matching optimizations over `new Date()` when only month/year filtering is needed.
+
+## 2025-05-18 - [Centralize Intl.NumberFormat Instantiation]
+
+**Learning:** Instantiating `Intl.NumberFormat` repeatedly inside component render functions or utility functions called within loops (e.g., `formatCurrency`) is a significant performance bottleneck in React. It's an expensive operation and creating multiple instances across different components wastes CPU and memory.
+**Action:** Extract the `Intl.NumberFormat` instantiation to a shared utility file (e.g., `utils.ts`) at the module level. Export a wrapper function that uses the globally cached instance to format numbers or currency. This avoids re-instantiation overhead entirely.
