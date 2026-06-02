@@ -2,6 +2,7 @@ import { useState, useEffect, FC } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { BillReminder, Subscription } from '../types';
+import { formatCurrency, formatShortDate } from '../utils';
 
 interface NotificationSystemProps {
   reminders: BillReminder[];
@@ -28,20 +29,6 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
 }) => {
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [showReminders, setShowReminders] = useState(false);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const getSubscriptionDetails = (subscriptionId: string) => {
     return subscriptions.find(sub => sub.id === subscriptionId);
@@ -134,7 +121,7 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
 
           addToast({
             title,
-            message: `${subscription.name} - ${formatCurrency(reminder.amount)} due ${formatDate(reminder.dueDate)}`,
+            message: `${subscription.name} - ${formatCurrency(reminder.amount)} due ${formatShortDate(reminder.dueDate)}`,
             type,
             duration,
           });
@@ -253,7 +240,8 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
                               <h5 className='font-semibold'>{subscription.name}</h5>
                             </div>
                             <p className='text-sm opacity-90 mb-2'>
-                              {formatCurrency(reminder.amount)} due {formatDate(reminder.dueDate)}
+                              {formatCurrency(reminder.amount)} due{' '}
+                              {formatShortDate(reminder.dueDate)}
                             </p>
                             <div className='flex gap-2'>
                               <button
