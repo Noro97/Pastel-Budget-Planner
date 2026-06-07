@@ -25,3 +25,8 @@
 ## 2026-04-09 - [Reduce Chained Operations in React Hooks]
 **Learning:** Found multiple instances where `.filter().reduce()` or `.filter().map().sort()` chains were used to process large datasets like transactions and subscriptions (e.g. in `App.tsx` and `useSubscriptions.ts`). The benchmarking shows that iterating through a large dataset multiple times and allocating intermediate arrays takes noticeably more time. Converting `.filter().map()` to a single `for` loop, or `.filter().reduce()` to a single `.reduce()` step leads to faster execution. Additionally, date parsing inside loops (like `new Date(date).getMonth()`) is extremely slow compared to simple string prefix matching when checking if dates fall in the current month.
 **Action:** When working on large datasets in React Hooks (like `transactions` and `subscriptions`), merge chained higher-order functions into a single `.reduce()` or a standard `for...of`/`for` loop, and consider string matching optimizations over `new Date()` when only month/year filtering is needed.
+
+## 2024-06-07 - Caching Intl Formatter Instances
+
+**Learning:** Instantiating `Intl.NumberFormat` or `Intl.DateTimeFormat` inside React components or utility functions is a significant performance bottleneck because it rebuilds formatting dictionaries every time it is called. Creating an instance on every render or map iteration consumes a massive amount of unnecessary CPU time.
+**Action:** Always extract `Intl` formatter instances (e.g., `Intl.NumberFormat`, `Intl.DateTimeFormat`) into a shared utility file or outside component render scopes. Cache them and reuse a single instance across the entire application to dramatically improve rendering speed.
