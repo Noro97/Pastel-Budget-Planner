@@ -3,6 +3,7 @@ import { useState, FC, Dispatch, SetStateAction, useMemo } from 'react';
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { Subscription, Transaction } from '../types';
+import { formatCurrency, formatShortDate } from '../utils';
 
 import NotificationSystem from './NotificationSystem';
 import SubscriptionCalendar from './SubscriptionCalendar';
@@ -35,13 +36,6 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
     markReminderAsRead,
     dismissReminder,
   } = useSubscriptions(subscriptions, setSubscriptions, addTransaction);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   const getQuickStats = () => {
     let activeSubscriptions = 0;
@@ -387,7 +381,7 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                 <div>
                   <span className={`block ${COLORS.neutral.text.muted}`}>Next Payment</span>
                   <span className='font-semibold'>
-                    {new Date(selectedSubscription.nextPaymentDate).toLocaleDateString()}
+                    {formatShortDate(selectedSubscription.nextPaymentDate)}
                   </span>
                 </div>
                 <div>
