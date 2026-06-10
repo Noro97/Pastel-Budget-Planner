@@ -3,6 +3,7 @@ import React from 'react';
 import { COMPONENTS, COLORS, TYPOGRAPHY } from '../design-system';
 import type { Transaction } from '../types';
 import { TransactionType } from '../types';
+import { formatDefaultDate } from '../utils';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -50,7 +51,7 @@ const TransactionItem = ({ transaction, onDelete }: TransactionItemProps) => {
             {transaction.description}
           </p>
           <p className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-0.5`}>
-            {transaction.category} &bull; {new Date(transaction.date).toLocaleDateString()}
+            {transaction.category} &bull; {formatDefaultDate(transaction.date)}
           </p>
         </div>
       </div>
