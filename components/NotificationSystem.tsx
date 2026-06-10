@@ -2,6 +2,7 @@ import { useState, useEffect, FC } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { BillReminder, Subscription } from '../types';
+import { formatCurrency, formatDateWithoutYear as formatDate } from '../utils';
 
 interface NotificationSystemProps {
   reminders: BillReminder[];
@@ -28,20 +29,6 @@ const NotificationSystem: FC<NotificationSystemProps> = ({
 }) => {
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [showReminders, setShowReminders] = useState(false);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const getSubscriptionDetails = (subscriptionId: string) => {
     return subscriptions.find(sub => sub.id === subscriptionId);
