@@ -1,5 +1,5 @@
-
 ## 2023-10-27 - [Chained Array Methods in React Render]
+
 **Learning:** React components (like SubscriptionDashboard) often contain chained array methods (e.g., multiple `.filter(...).length` or `.filter(...).reduce(...)`) inside the render body or inside local calculation functions like `getQuickStats`. This results in multiple N/M iterations and the allocation of intermediate arrays during every component render.
 **Action:** Replace chained array methods with single-pass `for...of` loops or `.reduce(...)` when aggregating values to reduce garbage collection overhead and loop iterations. Keep these single-pass operations clearly commented.
 
@@ -14,6 +14,7 @@
 **Action:** When strictly sorting or checking chronological order of dates formatted consistently as 'YYYY-MM-DD' ISO strings in arrays, use direct string comparison (e.g., `localeCompare`) instead of converting them to `Date` objects to avoid unnecessary performance overhead.
 
 ## 2024-05-18 - Replacing O(N) JSON.stringify deeply nested object comparison inside useEffects
+
 **Learning:** In React, passing inline objects as props (e.g., `stats={{ balance }}`) causes the object reference to change on every render. If this object needs to trigger effects, avoid using `JSON.stringify` on the object for deep comparison inside `useEffect`, as it executes on every render and creates a hidden O(N) bottleneck, especially if large arrays are stringified as well to bypass React dependency checks.
 **Action:** Extract primitives from the object and pass them to the `useEffect` dependency array (e.g., `stats.balance`), relying on React's built-in O(1) equality check instead of costly deep comparisons.
 
@@ -23,5 +24,11 @@
 **Action:** When searching for a threshold condition (e.g., "at least 5 unique items"), always use a manual loop (`for...of`) with an early `return` instead of chaining array methods over the entire collection.
 
 ## 2026-04-09 - [Reduce Chained Operations in React Hooks]
+
 **Learning:** Found multiple instances where `.filter().reduce()` or `.filter().map().sort()` chains were used to process large datasets like transactions and subscriptions (e.g. in `App.tsx` and `useSubscriptions.ts`). The benchmarking shows that iterating through a large dataset multiple times and allocating intermediate arrays takes noticeably more time. Converting `.filter().map()` to a single `for` loop, or `.filter().reduce()` to a single `.reduce()` step leads to faster execution. Additionally, date parsing inside loops (like `new Date(date).getMonth()`) is extremely slow compared to simple string prefix matching when checking if dates fall in the current month.
 **Action:** When working on large datasets in React Hooks (like `transactions` and `subscriptions`), merge chained higher-order functions into a single `.reduce()` or a standard `for...of`/`for` loop, and consider string matching optimizations over `new Date()` when only month/year filtering is needed.
+
+## 2024-05-30 - Caching Intl Formatter Instances
+
+**Learning:** Instantiating `Intl.NumberFormat` (or `Intl.DateTimeFormat`) is highly expensive in JavaScript. If local format functions are repeatedly recreating these instances inside render loops or array mappings (e.g., in UI components rendering lists), it creates a severe O(N) performance bottleneck.
+**Action:** Extract and globally cache formatter instances (e.g., in `utils.ts`) instead of instantiating them dynamically during runtime execution to improve rendering performance and minimize garbage collection overhead.
