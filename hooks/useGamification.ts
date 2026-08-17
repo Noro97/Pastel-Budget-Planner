@@ -38,12 +38,26 @@ export const useGamification = (
   stats: { balance: number }
 ) => {
   const prevDataRef = useRef<string>('');
+  const prevTransactionsRef = useRef<string>('');
+  const prevStatsRef = useRef<string>('');
 
-  const balance = stats.balance;
   useEffect(() => {
     if (transactions.length === 0) {
       return;
     }
+
+    const transactionsString = JSON.stringify(transactions);
+    const statsString = JSON.stringify(stats);
+
+    if (
+      prevTransactionsRef.current === transactionsString &&
+      prevStatsRef.current === statsString
+    ) {
+      return;
+    }
+
+    prevTransactionsRef.current = transactionsString;
+    prevStatsRef.current = statsString;
 
     const today = new Date();
     const lastTransaction = transactions[0];
@@ -52,7 +66,7 @@ export const useGamification = (
 
     const updatedData = { ...gamificationData };
 
-    const newBadgeIds = checkBadgeConditions(transactions, { balance });
+    const newBadgeIds = checkBadgeConditions(transactions, stats);
     const allUnlockedIds = [...new Set([...updatedData.unlockedBadgeIds, ...newBadgeIds])];
     if (allUnlockedIds.length > updatedData.unlockedBadgeIds.length) {
       updatedData.unlockedBadgeIds = allUnlockedIds;
@@ -65,38 +79,26 @@ export const useGamification = (
       updatedData.challenge = getInitialGamificationData().challenge;
     }
 
-    const { weeklyIncome, weeklyExpense } = transactions.reduce(
-      (acc, t) => {
-        if (t.date >= startOfWeekStr) {
-          if (t.type === TransactionType.INCOME) {
-            acc.weeklyIncome += t.amount;
-          } else if (t.type === TransactionType.EXPENSE) {
-            acc.weeklyExpense += t.amount;
-          }
-        }
-        return acc;
-      },
-      { weeklyIncome: 0, weeklyExpense: 0 }
-    );
+    const weeklyTransactions = transactions.filter(t => t.date >= startOfWeekStr);
+    const weeklyIncome = weeklyTransactions
+      .filter(t => t.type === TransactionType.INCOME)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const weeklyExpense = weeklyTransactions
+      .filter(t => t.type === TransactionType.EXPENSE)
+      .reduce((sum, t) => sum + t.amount, 0);
     const weeklySavings = weeklyIncome - weeklyExpense;
 
     updatedData.challenge.progress = Math.max(0, weeklySavings);
     updatedData.challenge.isComplete = weeklySavings >= updatedData.challenge.target;
 
     if (lastTransactionDateStr !== updatedData.lastStreakUpdateDate) {
-      const { dayIncome, dayExpense } = transactions.reduce(
-        (acc, t) => {
-          if (t.date === lastTransactionDateStr) {
-            if (t.type === TransactionType.INCOME) {
-              acc.dayIncome += t.amount;
-            } else if (t.type === TransactionType.EXPENSE) {
-              acc.dayExpense += t.amount;
-            }
-          }
-          return acc;
-        },
-        { dayIncome: 0, dayExpense: 0 }
-      );
+      const transactionsForLastDay = transactions.filter(t => t.date === lastTransactionDateStr);
+      const dayIncome = transactionsForLastDay
+        .filter(t => t.type === TransactionType.INCOME)
+        .reduce((sum, t) => sum + t.amount, 0);
+      const dayExpense = transactionsForLastDay
+        .filter(t => t.type === TransactionType.EXPENSE)
+        .reduce((sum, t) => sum + t.amount, 0);
 
       if (dayIncome > dayExpense) {
         const yesterday = new Date(today);
@@ -126,5 +128,5 @@ export const useGamification = (
       prevDataRef.current = updatedDataString;
       setGamificationData(updatedData);
     }
-  }, [transactions, balance, gamificationData, setGamificationData]);
+  }, [transactions, stats]);
 };

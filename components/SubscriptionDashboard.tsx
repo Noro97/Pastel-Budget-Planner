@@ -1,4 +1,4 @@
-import { useState, FC, Dispatch, SetStateAction, useMemo } from 'react';
+import { useState, FC, Dispatch, SetStateAction } from 'react';
 
 import { COLORS, COMPONENTS, TYPOGRAPHY } from '../design-system';
 import { useSubscriptions } from '../hooks/useSubscriptions';
@@ -44,74 +44,25 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
   };
 
   const getQuickStats = () => {
-    let activeSubscriptions = 0;
-    let pausedSubscriptions = 0;
-    let cancelledSubscriptions = 0;
+    const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active');
+    const pausedSubscriptions = subscriptions.filter(sub => sub.status === 'paused');
+    const cancelledSubscriptions = subscriptions.filter(sub => sub.status === 'cancelled');
 
-    for (const sub of subscriptions) {
-      if (sub.status === 'active') {
-        activeSubscriptions++;
-      } else if (sub.status === 'paused') {
-        pausedSubscriptions++;
-      } else if (sub.status === 'cancelled') {
-        cancelledSubscriptions++;
-      }
-    }
-
-    let upcomingThisWeek = 0;
-    let overduePayments = 0;
-
-    for (const sub of upcomingSubscriptions) {
-      if (sub.daysUntilPayment <= 7) {
-        upcomingThisWeek++;
-      }
-      if (sub.daysUntilPayment < 0) {
-        overduePayments++;
-      }
-    }
+    const upcomingThisWeek = upcomingSubscriptions.filter(sub => sub.daysUntilPayment <= 7);
+    const overduePayments = upcomingSubscriptions.filter(sub => sub.daysUntilPayment < 0);
 
     return {
       totalSubscriptions: subscriptions.length,
-      activeSubscriptions,
-      pausedSubscriptions,
-      cancelledSubscriptions,
-      upcomingThisWeek,
-      overduePayments,
+      activeSubscriptions: activeSubscriptions.length,
+      pausedSubscriptions: pausedSubscriptions.length,
+      cancelledSubscriptions: cancelledSubscriptions.length,
+      upcomingThisWeek: upcomingThisWeek.length,
+      overduePayments: overduePayments.length,
       totalMonthlySubscriptionCost,
     };
   };
 
   const stats = getQuickStats();
-
-  // Optimization: Memoize category breakdown calculations to prevent O(N) recalculation on every render
-  const categoryBreakdown = useMemo(() => {
-    const categoryTotals = subscriptions.reduce(
-      (acc, sub) => {
-        if (sub.status !== 'active') {
-          return acc;
-        }
-        const monthlyAmount =
-          sub.frequency === 'weekly'
-            ? sub.amount * 4.33
-            : sub.frequency === 'monthly'
-              ? sub.amount
-              : sub.frequency === 'quarterly'
-                ? sub.amount / 3
-                : sub.amount / 12;
-        acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    const sortedCategories = Object.entries(categoryTotals)
-      .sort(([, a], [, b]) => (b as number) - (a as number))
-      .slice(0, 6);
-
-    const maxCategoryAmount = Math.max(...(Object.values(categoryTotals) as number[]), 1);
-
-    return { sortedCategories, maxCategoryAmount };
-  }, [subscriptions]);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
@@ -156,9 +107,7 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
           <div className={`text-xl md:text-2xl font-bold ${COLORS.neutral.text.primary}`}>
             {stats.activeSubscriptions}
           </div>
-          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>
-            Active Subscriptions
-          </div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Active Subscriptions</div>
         </div>
 
         <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
@@ -168,9 +117,7 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
           >
             {stats.upcomingThisWeek}
           </div>
-          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>
-            Due This Week
-          </div>
+          <div className={`text-xs md:text-sm ${COLORS.neutral.text.muted} mt-1`}>Due This Week</div>
         </div>
 
         <div className={`${COMPONENTS.card} text-center hover:shadow-md transition-shadow`}>
@@ -278,32 +225,56 @@ const SubscriptionDashboard: FC<SubscriptionDashboardProps> = ({
                 <h3 className={`${TYPOGRAPHY.heading.lg} ${COLORS.neutral.text.primary} mb-4`}>
                   Spending by Category
                 </h3>
-                {categoryBreakdown.sortedCategories.length > 0 ? (
-                  <div className='grid gap-2'>
-                    {categoryBreakdown.sortedCategories.map(([category, amount]) => (
-                      <div key={category} className='flex items-center justify-between py-2'>
-                        <span className='text-slate-700'>{category}</span>
-                        <div className='flex items-center gap-2'>
-                          <div className='w-20 md:w-24 bg-gray-200 rounded-full h-2'>
-                            <div
-                              className='bg-blue-500 h-2 rounded-full transition-all'
-                              style={{
-                                width: `${((amount as number) / categoryBreakdown.maxCategoryAmount) * 100}%`,
-                              }}
-                            />
+                {(() => {
+                  const categoryTotals = subscriptions
+                    .filter(sub => sub.status === 'active')
+                    .reduce(
+                      (acc, sub) => {
+                        const monthlyAmount =
+                          sub.frequency === 'weekly'
+                            ? sub.amount * 4.33
+                            : sub.frequency === 'monthly'
+                              ? sub.amount
+                              : sub.frequency === 'quarterly'
+                                ? sub.amount / 3
+                                : sub.amount / 12;
+                        acc[sub.category] = (acc[sub.category] || 0) + monthlyAmount;
+                        return acc;
+                      },
+                      {} as Record<string, number>
+                    );
+
+                  const sortedCategories = Object.entries(categoryTotals)
+                    .sort(([, a], [, b]) => (b as number) - (a as number))
+                    .slice(0, 6);
+
+                  return sortedCategories.length > 0 ? (
+                    <div className='grid gap-2'>
+                      {sortedCategories.map(([category, amount]) => (
+                        <div key={category} className='flex items-center justify-between py-2'>
+                          <span className='text-slate-700'>{category}</span>
+                          <div className='flex items-center gap-2'>
+                            <div className='w-20 md:w-24 bg-gray-200 rounded-full h-2'>
+                              <div
+                                className='bg-blue-500 h-2 rounded-full transition-all'
+                                style={{
+                                  width: `${((amount as number) / Math.max(...(Object.values(categoryTotals) as number[]))) * 100}%`,
+                                }}
+                              />
+                            </div>
+                            <span className='font-semibold text-slate-800 w-20 text-right'>
+                              {formatCurrency(amount as number)}
+                            </span>
                           </div>
-                          <span className='font-semibold text-slate-800 w-20 text-right'>
-                            {formatCurrency(amount as number)}
-                          </span>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className={`${COLORS.neutral.text.muted} text-center py-4`}>
-                    No active subscriptions to analyze
-                  </p>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={`${COLORS.neutral.text.muted} text-center py-4`}>
+                      No active subscriptions to analyze
+                    </p>
+                  );
+                })()}
               </div>
             </div>
           )}

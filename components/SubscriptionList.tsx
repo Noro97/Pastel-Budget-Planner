@@ -96,12 +96,7 @@ const SubscriptionList: FC<SubscriptionListProps> = ({
         case 'amount':
           return b.amount - a.amount;
         case 'nextPayment':
-          // Optimization: Avoid new Date() inside sort for ISO strings (~10x faster)
-          return a.nextPaymentDate < b.nextPaymentDate
-            ? -1
-            : a.nextPaymentDate > b.nextPaymentDate
-              ? 1
-              : 0;
+          return new Date(a.nextPaymentDate).getTime() - new Date(b.nextPaymentDate).getTime();
         default:
           return 0;
       }

@@ -199,31 +199,24 @@ export const useSubscriptions = (
 
   // Get upcoming subscriptions for calendar view
   const upcomingSubscriptions = useMemo(() => {
-    const upcoming = [];
-    const nowTime = Date.now();
-    for (let i = 0; i < subscriptions.length; i++) {
-      const sub = subscriptions[i];
-      if (sub.status === SubscriptionStatus.ACTIVE) {
-        upcoming.push({
-          ...sub,
-          daysUntilPayment: Math.ceil(
-            (new Date(sub.nextPaymentDate).getTime() - nowTime) / (1000 * 60 * 60 * 24)
-          ),
-        });
-      }
-    }
+    const upcoming = subscriptions
+      .filter(sub => sub.status === SubscriptionStatus.ACTIVE)
+      .map(sub => ({
+        ...sub,
+        daysUntilPayment: Math.ceil(
+          (new Date(sub.nextPaymentDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        ),
+      }))
+      .sort((a, b) => a.daysUntilPayment - b.daysUntilPayment);
 
-    return upcoming.sort((a, b) => a.daysUntilPayment - b.daysUntilPayment);
+    return upcoming;
   }, [subscriptions]);
 
   // Get active reminders (not dismissed)
   const activeReminders = useMemo(() => {
-    return (
-      reminders
-        .filter(reminder => !reminder.isDismissed)
-        // Optimization: Avoid new Date() inside sort for ISO strings (~10x faster)
-        .sort((a, b) => (a.dueDate < b.dueDate ? -1 : a.dueDate > b.dueDate ? 1 : 0))
-    );
+    return reminders
+      .filter(reminder => !reminder.isDismissed)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [reminders]);
 
   // Calculate total monthly subscription cost

@@ -30,17 +30,12 @@ const App = () => {
   };
 
   const { totalIncome, totalExpense, balance } = useMemo(() => {
-    const { income, expense } = transactions.reduce(
-      (acc, t) => {
-        if (t.type === TransactionType.INCOME) {
-          acc.income += t.amount;
-        } else if (t.type === TransactionType.EXPENSE) {
-          acc.expense += t.amount;
-        }
-        return acc;
-      },
-      { income: 0, expense: 0 }
-    );
+    const income = transactions
+      .filter(t => t.type === TransactionType.INCOME)
+      .reduce((acc, t) => acc + t.amount, 0);
+    const expense = transactions
+      .filter(t => t.type === TransactionType.EXPENSE)
+      .reduce((acc, t) => acc + t.amount, 0);
     return {
       totalIncome: income,
       totalExpense: expense,
@@ -50,20 +45,21 @@ const App = () => {
 
   const currentMonthTransactions = useMemo(() => {
     const today = new Date();
-    // Months in JavaScript are 0-indexed, so we add 1 and pad with 0
-    const targetPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-
-    // Optimization: Avoid creating Date objects in the filter loop (O(N) cost).
-    // Transactions are consistently formatted as 'YYYY-MM-DD', so string matching
-    // is ~85% faster and avoids UTC timezone offset bugs.
-    return transactions.filter(t => t.date.startsWith(targetPrefix));
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    return transactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return (
+        transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear
+      );
+    });
   }, [transactions]);
 
   useGamification(transactions, gamificationData, setGamificationData, { balance });
 
   return (
     <div
-      className={`min-h-screen ${COLORS.neutral.bg.primary} ${COLORS.neutral.text.primary} font-sans gradient-bg`}
+      className={`min-h-screen ${COLORS.neutral.bg.primary} ${COLORS.neutral.text.primary} font-sans`}
     >
       <Header />
 
@@ -74,7 +70,7 @@ const App = () => {
             <button
               onClick={() => setActiveTab('budget')}
               className={`
-                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base liquid-glass
+                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base
                 ${
                   activeTab === 'budget'
                     ? 'bg-blue-600 text-white shadow-md'
@@ -87,7 +83,7 @@ const App = () => {
             <button
               onClick={() => setActiveTab('subscriptions')}
               className={`
-                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base liquid-glass
+                px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base
                 ${
                   activeTab === 'subscriptions'
                     ? 'bg-blue-600 text-white shadow-md'
@@ -103,7 +99,7 @@ const App = () => {
           {activeTab === 'subscriptions' && subscriptions.length === 0 && (
             <button
               onClick={() => initializeSampleData(setSubscriptions)}
-              className='px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-blue-600 transition-all shadow-sm text-sm md:text-base pulse'
+              className='px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-blue-600 transition-all shadow-sm text-sm md:text-base'
             >
               ✨ Load Demo Data
             </button>
@@ -111,7 +107,7 @@ const App = () => {
         </div>
       </div>
 
-      <main className={`${SPACING.container} p-4 md:p-6 lg:p-8 fade-in`}>
+      <main className={`${SPACING.container} p-4 md:p-6 lg:p-8`}>
         {activeTab === 'budget' ? (
           <div className={`grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-8`}>
             <div className={`xl:col-span-2 space-y-4 md:space-y-6 lg:space-y-8`}>
